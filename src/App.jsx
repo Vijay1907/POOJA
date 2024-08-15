@@ -15,8 +15,8 @@ import UpdateSubject from "./Pages/Subject/UpdateSubject";
 // import {ReactQueryDevTools} from "react-query/devtools"
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import AddMcqSubject from "./Pages/Mcq/AddMcqSubject";
-import McqSubject from "./Pages/Mcq/McqSubject";
+import AddDhyaan from "./Pages/Mcq/AddMcqSubject";
+import Dhyaan from "./Pages/Mcq/McqSubject";
 import AddMcq from "./Pages/Mcq/AddMcq";
 import AddMcqTest from "./Pages/Mcq/AddMcqTest";
 import ViewUserDetails from "./Pages/UserDetails/ViewUserDetails";
@@ -64,7 +64,15 @@ function App() {
           path="/dhyaan"
           element={
             <PrivateRoute>
-              <McqSubject />
+              <Dhyaan />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/add-dhyaan"
+          element={
+            <PrivateRoute>
+              <AddDhyaan />
             </PrivateRoute>
           }
         />
@@ -140,14 +148,7 @@ function App() {
             </PrivateRoute>
           }
         />
-        <Route
-          path="/add-mcqSubject"
-          element={
-            <PrivateRoute>
-              <AddMcqSubject />
-            </PrivateRoute>
-          }
-        />
+
         <Route
           path="/add-mcq/:id"
           element={

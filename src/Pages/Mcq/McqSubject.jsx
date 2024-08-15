@@ -8,7 +8,7 @@ import { privateRequest } from '../../configs/RequestMethod'
 import { useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
 
-const McqSubject = () => {
+const Dhyaan = () => {
 
   const [subjectsList, setSubjectList] = useState([])
   const [isLoading, setIsLoading] = useState(false)
@@ -60,14 +60,14 @@ const McqSubject = () => {
 
   return (
     <div>
-      <Navbar title={"MCQ Subject"} />
+      <Navbar title={"Dhyaan"} />
       <Sidebar />
       {isLoading === true ? ('Loading ....') : (
         <>
           <div className="flex justify-end mr-4 mt-4">
-            <Link to='/add-mcqSubject'>
+            <Link to='/add-dhyaan'>
               <button className="bg-purple-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="button">
-                Add MCQ Subject
+                Add Dhyaan
               </button>
             </Link>
           </div>
@@ -135,4 +135,4 @@ const McqSubject = () => {
   )
 }
 
-export default McqSubject
+export default Dhyaan
