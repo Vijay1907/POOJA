@@ -1,9 +1,5 @@
 import React from 'react';
 import { useLocation, Link } from 'react-router-dom';
-import { Document, Page, pdfjs } from 'react-pdf';
-
-// Set the worker source for pdfjs
-pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.js`;
 
 const PdfViewer = () => {
     const location = useLocation();
@@ -19,22 +15,19 @@ const PdfViewer = () => {
                     </button>
                 </Link>
             </div>
-            {pdfUrl ? (
-                <div className="pdf-viewer-container">
-                    <Document
-                        file={pdfUrl}
-                        onLoadSuccess={({ numPages }) => console.log(`Loaded ${numPages} pages`)}
-                        className="pdf-document"
-                    >
-                        {/* Render all pages */}
-                        {Array.from(new Array(2), (el, index) => (
-                            <Page key={index} pageNumber={index + 1} />
-                        ))}
-                    </Document>
-                </div>
-            ) : (
-                <p className="text-red-500">No PDF to display</p>
-            )}
+            <div className="pdf-viewer-container">
+                {pdfUrl ? (
+                    <embed
+                        src={pdfUrl}
+                        type="application/pdf"
+                        width="100%"
+                        height="600px"
+                        className="border rounded shadow"
+                    />
+                ) : (
+                    <p className="text-red-500">No PDF to display</p>
+                )}
+            </div>
         </div>
     );
 };

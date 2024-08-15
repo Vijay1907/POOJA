@@ -129,7 +129,7 @@ export const UPDATEBOOK = async (formData, id) => {
     return response
 }
 
-export const DELETEBOOk = async (id) => {
+export const DELETEBOOK = async (id) => {
     // const response = await privateRequest.delete(`/study/book/${id}`,{
     //    headers: {
     //         Authorization: `Bearer ${jwtToken}`,
