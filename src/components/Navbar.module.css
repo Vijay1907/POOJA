@@ -1,0 +1,9 @@
+.account{
+    position: fixed;
+    top: 54px;
+    background-color: white;
+    width: 80px;
+    padding: 0px 5px 0px 5px;
+    border: 1px solid rgb(171, 169, 169);
+    
+}

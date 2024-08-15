@@ -1,0 +1,24 @@
+.profileDropdown {
+    position: absolute;
+    top: 2.8rem;
+    right: 2.7rem;
+    width: 10rem;
+    padding: 10px;
+    border-radius: 12px;
+    border: 1px solid gray;
+    background-color: gainsboro;
+  }
+  
+  .profileDropdown::before {
+    content: "";
+    position: absolute;
+    top: -0.7rem;
+    right: 1.1rem;
+    width: 20px;
+    height: 20px;
+    transform: rotate(45deg);
+    background-color: gainsboro;
+
+    border-left: 1px solid gray;
+    border-top: 1px solid gray;
+  }
