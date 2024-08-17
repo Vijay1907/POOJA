@@ -5,7 +5,7 @@ import { brandImg } from "../service";
 import { SideBarLinks } from "../configs/SidebarLinks";
 
 const Sidebar = () => {
-  const [isExpended, setExpended] = useState(true);
+  const [isExpended, setExpended] = useState(false);
   const page = useLocation();
 
   let user;
