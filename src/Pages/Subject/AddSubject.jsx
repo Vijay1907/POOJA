@@ -27,8 +27,8 @@ const AddBooks = () => {
       formData.append("bookPdf", bookPdf);  // Binary file
       try {
         let response = await ADDBOOK(formData)
-        if (response.data.success) {
-          toast.success('Book added successfully!');
+        if (response?.data?.success) {
+          toast.success(response?.data?.message);
           // Clear form fields after submission
           setBookName("");
           setBookDescription("");
@@ -36,7 +36,7 @@ const AddBooks = () => {
           setBookPdf(null);
           setErrors({})
         } else {
-          toast.error(response.error.data.message);
+          toast.error(response?.error?.data?.message);
         }
       } catch (error) {
         console.error("Error adding book:", error);
@@ -60,8 +60,6 @@ const AddBooks = () => {
     }
 
     await submitData();
-
-
   };
 
   return (

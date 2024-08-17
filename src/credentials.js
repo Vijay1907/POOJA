@@ -1,6 +1,6 @@
 
 
 let user = {
-    email: 'vijay@gmail.com',
-    password: 'vijay@123'
+    email: 'karan@gmail.com',
+    password: 'karan@123'
 }

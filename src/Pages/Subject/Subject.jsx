@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { BsPencilSquare, BsFillTrashFill } from "react-icons/bs";
-import { AiFillEye } from "react-icons/ai";
+import { BsPencilSquare, BsFillTrashFill ,BsFillCheckCircleFill, BsFillCircleFill} from "react-icons/bs";
+import { AiFillEye,AiOutlinePlus } from "react-icons/ai";
 import Navbar from '../../components/Navbar';
 import Sidebar from '../../components/Sidebar';
 import { toast } from 'react-toastify';
 import { DELETEBOOK, GETBOOKS, UPDATEBOOK } from '../../service';
 import { FaFilePdf } from 'react-icons/fa';
+import Description from '../../components/Description';
 
 const Books = () => {
   const [subjectsList, setSubjectList] = useState([]);
@@ -105,13 +106,13 @@ const Books = () => {
     }
   };
 
+  const togglePopularStatus = () => {
+    
+  };
+
   const handleEditSubmit = async (e) => {
     e.preventDefault();
-
-    // Prepare the data to send
     const formDataToSend = new FormData();
-
-    // Add only the changed fields
     if (formData.bookName !== originalBook.bookName) formDataToSend.append('bookName', formData.bookName);
     if (formData.bookDescription !== originalBook.bookDescription) formDataToSend.append('bookDescription', formData.bookDescription);
     if (formData.coverImage) formDataToSend.append('coverImage', formData.coverImage);
@@ -150,12 +151,28 @@ const Books = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 ml-5">
             {subjectsList?.map((book, index) => (
               <div key={index} className="bg-white border border-gray-200 rounded-lg shadow-md overflow-hidden">
-                <img src={book.coverImage} alt={book.bookName} className="w-full h-60 object-contain" />
-                <div className="p-4">
+              <div className='flex items-center justify-center'>
+              <img src={book.coverImage} alt={book.bookName} className="h-[180px] object-contain mt-3" />
+              </div>
+                <div className="p-4 pb-2">
                   <hr className="border-gray-300 mb-3" />
                   <h3 className="text-lg font-semibold mb-2">{book.bookName}</h3>
-                  <p className="text-gray-600 text-sm mb-4">{book.bookDescription}</p>
-                  <div className="flex justify-around items-center">
+                  <Description description={book.bookDescription} />
+                  {/* <p className="text-gray-600 text-sm mb-4">{book.bookDescription}</p> */}
+                  <div className="flex gap-x-12 items-center">
+               
+
+
+{/* 
+               {book.added &&    <button
+            onClick={togglePopularStatus}
+            className={`flex items-center p-1  rounded-full ${book.added ? 'bg-green-500 text-white' : 'bg-gray-200 text-gray-500'} transition-colors duration-150`}
+          >
+            <BsFillCheckCircleFill className="text-lg" /> 
+          </button>} */}
+
+
+
                     <BsPencilSquare
                       onClick={() => handleEditClick(book)}
                       className="text-yellow-500 cursor-pointer text-2xl hover:text-yellow-600 transition duration-150"

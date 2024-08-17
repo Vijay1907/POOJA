@@ -1,364 +1,253 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useParams } from "react-router-dom";
-import { privateRequest } from "../../configs/RequestMethod";
 import Navbar from "../../components/Navbar";
 import Sidebar from "../../components/Sidebar";
-import { FaChevronUp, FaChevronDown } from 'react-icons/fa';
-import { AiFillEdit } from "react-icons/ai";
-import UpdateReference from './UpdateReference.jsx';
+import CryptoJS from "crypto-js";
+import { useNavigate } from 'react-router-dom'; // for navigation
+import { CHANGEPASSWORD, UPDATEADMINDETAILS } from '../../service';
+import { toast } from 'react-toastify'; // Ensure you have react-toastify installed
+import { useDispatch } from 'react-redux';
+import { FaEye, FaEyeSlash } from 'react-icons/fa'; // Import the eye icons from react-icons
 
 const ViewUserDetails = () => {
-  const [videoCollapsed, setVideoCollapsed] = useState(true);
-  const [referenceCollapsed, setReferenceCollapsed] = useState(true);
-  const [tests, setTests] = useState([]);
-  const [subjectTests, setSubjectTests] = useState([]);
-  const [reference, setReference] = useState([]);
-  const [isUpdateReferenceModalOpen, setIsUpdateReferenceModalOpen] = useState(false);
-  const [referenceDataForEdit, setReferenceDataForEdit] = useState(null);
-  const [refId, setRefId] = useState(null);
-  const [isUpdate, setIsUpdate] = useState(true);
-
-  const toggleVideo = () => {
-    setVideoCollapsed(!videoCollapsed);
-  };
-
-  const toggleReference = () => {
-    setReferenceCollapsed(!referenceCollapsed);
-  };
-
-  const [isSubjectCollapsed, setSubjectCollapsed] = useState(true);
-
-  const toggleSubject = () => {
-    setSubjectCollapsed(!isSubjectCollapsed);
-  };
-
-  let { id } = useParams();
-  const [userData, setUserData] = useState({});
-  const [isLoading, setIsLoading] = useState(false);
-  console.log(id)
-
-  const getLeadDetails = async () => {
-    try {
-      setIsLoading(true);
-      const response = await privateRequest.get(`/users/singleUser/${id}`);
-      console.log(response.data)
-      setUserData(response?.data?.user);
-      setReference(response?.data?.user?.reference)
-      console.log("usersref------------", response.data.user.reference)
-      setIsLoading(false);
-    } catch (error) {
-      console.error(error);
-      setIsLoading(false);
-
-    }
-  };
-
-  const getTestDetails = async () => {
-    try {
-      setIsLoading(true);
-      const response = await privateRequest.get(`/users/submitTests/${id}`);
-      setTests(response?.data?.data);
-      console.log("tests", response?.data?.data)
-      setIsLoading(false);
-    } catch (error) {
-      console.error(error);
-      setIsLoading(false);
-
-    }
-  };
-
-  const getSubjectTestDetails = async () => {
-    try {
-      setIsLoading(true);
-      const response = await privateRequest.get(`/users/submitSubjectTests/${id}`);
-      setSubjectTests(response?.data?.data);
-      console.log("tests", response?.data?.data)
-      setIsLoading(false);
-    } catch (error) {
-      console.error(error);
-      setIsLoading(false);
-
-    }
-  };
+  const [userData, setUserData] = useState(null);
+  const [editMode, setEditMode] = useState(false);
+  const [passwordChangeMode, setPasswordChangeMode] = useState(false);
+  const [updatedName, setUpdatedName] = useState('');
+  const [updatedEmail, setUpdatedEmail] = useState('');
+  const [oldPassword, setOldPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [errors, setErrors] = useState({});
+  const [showOldPassword, setShowOldPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const dispatch = useDispatch();
+  const navigate = useNavigate(); // hook for navigation
 
   useEffect(() => {
-    getLeadDetails();
-    getTestDetails()
-    getSubjectTestDetails()
+    const encryptedUser = localStorage.getItem('user');
+    if (encryptedUser) {
+      const bytes = CryptoJS.AES.decrypt(encryptedUser, 'your-encryption-key');
+      const decryptedUser = JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
+      setUserData(decryptedUser);
+      setUpdatedName(decryptedUser.name);
+      setUpdatedEmail(decryptedUser.email);
+    }
+  }, []);
 
-  }, [id, isUpdate]);
-
-  const openUpdateReferenceModal = (referenceItem) => {
-    setReferenceDataForEdit(referenceItem);
-    setRefId(referenceItem._id)
-    setIsUpdateReferenceModalOpen(true);
+  const validateDetails = () => {
+    const newErrors = {};
+    if (updatedName.length < 3) {
+      newErrors.name = 'Name must be at least 3 characters long';
+    }
+    if (!/\S+@\S+\.\S+/.test(updatedEmail)) {
+      newErrors.email = 'Invalid email address';
+    }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
-  const closeUpdateReferenceModal = () => {
-    setReferenceDataForEdit(null);
-    setIsUpdateReferenceModalOpen(false);
+  const validatePassword = () => {
+    const newErrors = {};
+    if (newPassword.length < 8) {
+      newErrors.newPassword = 'Password must be at least 8 characters long';
+    }
+    if (!oldPassword) {
+      newErrors.oldPassword = 'Old password is required';
+    }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
+
+  const handleUpdateDetails = async () => {
+    if (!validateDetails()) return;
+
+    try {
+      const response = await UPDATEADMINDETAILS({
+        name: updatedName,
+        email: updatedEmail
+      }, dispatch);
+      // Update local storage with the new user data
+      const updatedUser = { ...userData, name: updatedName, email: updatedEmail };
+      setUserData(updatedUser);
+      setEditMode(false);
+    } catch (error) {
+      toast.error(error?.response?.data?.message || 'Error updating user details');
+      console.error('Error updating user details:', error);
+    }
+  };
+
+  const handleCancelUpdateDetails = () => {
+    setUpdatedEmail(userData.email);
+    setUpdatedName(userData.name);
+    setEditMode(false);
+    setErrors({});
+  };
+
+  const handleChangePassword = async () => {
+    if (!validatePassword()) return;
+
+    try {
+      if(oldPassword!== newPassword){
+        toast.error("Password does not match")
+        return
+      }
+      const response = await CHANGEPASSWORD({
+        oldPassword,
+        newPassword
+      },navigate, dispatch);
+    } catch (error) {
+      toast.error(error?.response?.data?.message || 'Error changing password');
+      console.error('Error changing password:', error);
+    }
+  };
+
+  const handleCancelChangePassword = () => {
+    setOldPassword("");
+    setNewPassword("");
+    setPasswordChangeMode(false);
+    setErrors({});
+  };
+
+  if (!userData) return <div>Loading...</div>;
 
   return (
     <>
-      {isLoading === true ? (
-        "Loading..."
-      ) : (
-        <div>
-          <Navbar title={"User Details"} />
-          <Sidebar />
+      <Navbar title={"User Details"} />
+      <Sidebar />
 
-
-          <div className="ml-20 mt-4">
-            <h1 className="bg-purple-400 py-4 px-6 text-xl text-white font-semibold">
-              Personal Details
-            </h1>
-            <div className="grid grid-cols-5 gap-4 items-start p-6 bg-white pb-5 space-y-6 ">
-              <div>
+      <div className="ml-20 mt-4">
+        <h1 className="bg-purple-400 py-4 px-6 text-xl text-white font-semibold">
+          Admin Details
+        </h1>
+        <div className="p-6 bg-white space-y-6">
+          {passwordChangeMode ? (
+            <div className='md:w-[50%] w-full'>
+              <p className="font-semibold text-lg mb-2">Change Password</p>
+              <div className="relative mb-2">
+                <input
+                  type={showOldPassword ? "text" : "password"}
+                  placeholder="Old Password"
+                  value={oldPassword}
+                  onChange={(e) => setOldPassword(e.target.value)}
+                  className="border p-2 rounded w-full"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowOldPassword(!showOldPassword)}
+                  className="absolute right-2 top-1/2 transform -translate-y-1/2"
+                >
+                  {showOldPassword ? <FaEyeSlash /> : <FaEye />}
+                </button>
+              </div>
+              {errors.oldPassword && <p className="text-red-500 text-sm mb-3">{errors.oldPassword}</p>}
+              <div className="relative mb-2">
+                <input
+                  type={showNewPassword ? "text" : "password"}
+                  placeholder="New Password"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  className="border p-2 rounded w-full"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowNewPassword(!showNewPassword)}
+                  className="absolute right-2 top-1/2 transform -translate-y-1/2"
+                >
+                  {showNewPassword ? <FaEyeSlash /> : <FaEye />}
+                </button>
+              </div>
+              {errors.newPassword && <p className="text-red-500 text-sm mb-3">{errors.newPassword}</p>}
+              <div className="flex justify-between mt-4">
+                <button
+                  onClick={handleChangePassword}
+                  className="bg-green-500 text-white py-2 px-4 rounded"
+                >
+                  Change Password
+                </button>
+                <button
+                  onClick={handleCancelChangePassword}
+                  className="bg-red-500 text-white py-2 px-4 rounded"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className='md:w-[50%] w-full'>
+              <div className='mb-3'>
                 <p className="font-semibold text-lg">User Name</p>
-                <p>{userData.name}</p>
-              </div>
-              <div>
-                <p className="font-semibold text-lg">State</p>
-                <p>{userData.state}</p>
-              </div>
-              <div>
-                <p className="font-semibold text-lg">District</p>
-                <p>{userData.district}</p>
-              </div>
-              <div>
-                <p className="font-semibold text-lg">
-                  Mobile Number
-                  {/*  */}
-                </p>
-                <p>{userData.mobileNo}</p>
-              </div>
-              <div>
-                <p className="font-semibold text-lg">
-                  Status
-                </p>
-                <p>{userData.active}</p>
-              </div>
-              <div className="grid col-span-5">
-                <div className="flex space-x-8">
-                  {userData?.reference?.map((ref, index) => {
-                    return (
-                      <div key={index}>
-                        <h1 className="font-semibold text-lg">
-                          Refernce {index + 1}
-                        </h1>
-                        <div className="flex">
-                          <p>
-                            Refernce Name :
-                          </p>
-                          <p className="font-bold mx-2">{ref.name}</p>
-                        </div>
-                        <div className="flex">
-                          <p>
-                            Refernce Mobile No :
-                          </p>
-                          <p className="font-bold mx-2">{ref.mobileNo}</p>
-                        </div>
-                      </div>
-                    )
-                  })}
-                </div>
-              </div>
-
-
-            </div>
-
-
-            <div className="my-8">
-              <h1 className="bg-purple-400 py-4 px-6 text-xl text-white font-semibold flex justify-between items-center">
-                Video Test Details
-                <button onClick={toggleVideo} className="text-white">
-                  {videoCollapsed ? <FaChevronDown /> : <FaChevronUp />}
-                </button>
-              </h1>
-
-              {!videoCollapsed && (tests.length > 0 ? (
-                <div className="overflow-auto my-2">
-                  <table className="w-[100%] border-collapse">
-                    {/* head */}
-                    <thead className="bg-purple-400 text-white sticky top-0">
-                      <tr>
-                        <th>S.no.</th>
-                        <th>Subject Name</th>
-                        <th>Topic Name</th>
-                        <th>Test Name</th>
-                        <th>Score</th>
-                        <th>Duration</th>
-                      </tr>
-                    </thead>
-
-                    {/* body */}
-                    <tbody>
-                      {tests.map((item, index) => (
-                        <tr
-                          className={
-                            index % 2 === 1
-                              ? "text-center bg-[#D4E6FF]"
-                              : "text-center"
-                          }
-                          key={index}
-                        >
-                          <td className="py-3 items-center flex justify-center">
-                            {index + 1}
-                          </td>
-                          <td>{item?.subjectId?.subjectName}</td>
-                          <td>{item?.topicId?.topicName}</td>
-                          <td>{item?.testId?.testName}</td>
-                          <td>{item.score}</td>
-                          <td>{item.duration} min</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              ) : (
-                <div className="text-center text-xl font-semibold my-2">
-                  No data found
-                </div>
-              ))}
-
-
-            </div>
-
-
-            <div className="my-8">
-              <h1 className="bg-purple-400 py-4 px-6 text-xl text-white font-semibold flex justify-between items-center">
-                Subject Test Details
-                <button onClick={toggleSubject} className="text-white">
-                  {isSubjectCollapsed ? <FaChevronDown /> : <FaChevronUp />}
-                </button>
-              </h1>
-
-              {(!isSubjectCollapsed && subjectTests?.length > 0) ? (
-                <div className="overflow-auto mt-2">
-                  <table className="w-[100%] border-collapse">
-                    {/* head */}
-                    <thead className="bg-purple-400 text-white sticky top-0">
-                      <tr>
-                        <th>S.no.</th>
-                        <th>Subject Name</th>
-                        <th>Test Name</th>
-                        <th>Score</th>
-                        <th>Duration</th>
-                      </tr>
-                    </thead>
-
-
-                    {/* body */}
-                    <tbody>
-                      {subjectTests.map((item, index) => (
-                        <tr
-                          className={
-                            index % 2 === 1
-                              ? 'text-center bg-[#D4E6FF]'
-                              : 'text-center'
-                          }
-                          key={index}
-                        >
-                          <td className="py-3 items-center flex justify-center">
-                            {index + 1}
-                          </td>
-                          <td>{item.subjectId.subjectName}</td>
-                          <td>{item.subjectTestId.testName}</td>
-                          <td>{item.score}</td>
-                          <td>{item.duration} min</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              ) : (
-                isSubjectCollapsed ? null : (
-                  <div className="text-center text-xl font-semibold mt-2">
-                    No data found
+                {editMode ? (
+                  <div>
+                    <input
+                      type="text"
+                      value={updatedName}
+                      onChange={(e) => setUpdatedName(e.target.value)}
+                      className="border p-2 rounded w-full"
+                    />
+                    {errors.name && <p className="text-red-500 text-sm">{errors.name}</p>}
                   </div>
-                )
+                ) : (
+                  <p className='mt-1'> {userData.name}</p>
+                )}
+              </div>
+              <div className='mb-3'>
+                <p className="font-semibold text-lg">Email</p>
+                {editMode ? (
+                  <div>
+                    <input
+                      type="email"
+                      value={updatedEmail}
+                      onChange={(e) => setUpdatedEmail(e.target.value)}
+                      className="border p-2 rounded w-full"
+                    />
+                    {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
+                  </div>
+                ) : (
+                  <p className='mt-1'>{userData.email}</p>
+                )}
+              </div>
+              {editMode && (
+                <div className='flex gap-x-4'>
+                  <button
+                    onClick={handleUpdateDetails}
+                    className="bg-green-500 text-white py-2 px-4 rounded"
+                  >
+                    Save Changes
+                  </button>
+                  <button
+                    onClick={handleCancelUpdateDetails}
+                    className="bg-red-500 text-white py-2 px-4 rounded"
+                  >
+                    Cancel
+                  </button>
+                </div>
               )}
             </div>
-
-
-
-            <div className="my-8">
-              <h1 className="bg-purple-400 py-4 px-6 text-xl text-white font-semibold flex justify-between items-center">
-                Reference Details
-                <button onClick={toggleReference} className="text-white">
-                  {referenceCollapsed ? <FaChevronDown /> : <FaChevronUp />}
-                </button>
-              </h1>
-
-              {(!referenceCollapsed && reference?.length > 0) ? (
-                <div className="h-[calc(60vh-120px)] overflow-auto my-2">
-                  <table className="w-[100%] border-collapse">
-                    {/* head */}
-                    <thead className="bg-purple-400 text-white sticky top-0">
-                      <tr>
-                        <th>S.no.</th>
-                        <th>Name</th>
-                        <th>Mobile No</th>
-                        <th>Status</th>
-                        <th>Remarks</th>
-                        <th>Action</th>
-                      </tr>
-                    </thead>
-
-                    {/* body */}
-                    <tbody>
-                      {reference.map((item, index) => (
-                        <tr
-                          className={
-                            index % 2 === 1
-                              ? 'text-center bg-[#D4E6FF]'
-                              : 'text-center'
-                          }
-                          key={index}
-                        >
-                          <td className="py-3 items-center flex justify-center">
-                            {index + 1}
-                          </td>
-                          <td>{item.name}</td>
-                          <td>{item.mobileNo}</td>
-                          <td>{item.status ? item.status : '-'}</td>
-                          <td>{item.remarks ? item.remarks : '-'}</td>
-                          <td className="text-center cursor-pointer" onClick={() => openModal(item)}>
-                            <AiFillEdit className="w-[100%]" onClick={() => openUpdateReferenceModal(item)} />
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              ) : (
-                referenceCollapsed ? null : (
-                  <div className="text-center text-xl font-semibold my-2">
-                    No data found
-                  </div>
-                )
-              )}
-            </div>
-
-
-
-          </div>
-
-
+          )}
         </div>
-      )}
 
-
-      <UpdateReference
-        isOpen={isUpdateReferenceModalOpen}
-        onClose={closeUpdateReferenceModal}
-        refId={refId}
-        userId={userData._id}
-        setIsUpdate={setIsUpdate}
-        referenceData={referenceDataForEdit}
-      />
-
+        <div className="flex space-x-4">
+          {!passwordChangeMode && (
+            <>
+              {!editMode && (
+                <button
+                  onClick={() => setEditMode(true)}
+                  className="bg-blue-500 text-white py-2 px-4 rounded"
+                >
+                  Edit Details
+                </button>
+              )}
+              {!editMode && (
+                <button
+                  onClick={() => setPasswordChangeMode(true)}
+                  className="bg-green-500 text-white py-2 px-4 rounded"
+                >
+                  Change Password
+                </button>
+              )}
+            </>
+          )}
+        </div>
+      </div>
     </>
   );
 };

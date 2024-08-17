@@ -1,43 +1,28 @@
 import React, { useEffect, useState } from "react";
-import { privateRequest } from "../../configs/RequestMethod";
-import * as XLSX from "xlsx"; // Import the XLSX library for Excel conversion
-import { AiFillEye } from "react-icons/ai"
-import { Link } from "react-router-dom";
+import * as XLSX from "xlsx";
 import moment from "moment";
+import { GETUSERS } from "../../service";
 
 function UserDetails() {
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [stateFilter, setStateFilter] = useState(""); // State filter
-  const [districtFilter, setDistrictFilter] = useState(""); // District filter
 
   const getAllUser = async () => {
     try {
       setIsLoading(true);
-      const response = await privateRequest.get("/users/allUsers");
-      const filteredData = response?.data?.allUsers.filter(item => {
-        if (stateFilter && districtFilter) {
-          return item.state === stateFilter && item.district === districtFilter;
-        } else if (stateFilter) {
-          return item.state === stateFilter;
-        } else if (districtFilter) {
-          return item.district === districtFilter;
-        } else {
-          return true;
-        }
-      });
-      setData(filteredData);
-
+     let response = await GETUSERS()
+      setData(response?.data?.data);
       setIsLoading(false);
     } catch (error) {
       console.log(error);
+      toast.error(response?.error?.data?.message)
       setIsLoading(false);
     }
   };
 
   useEffect(() => {
     getAllUser();
-  }, [stateFilter, districtFilter]);
+  }, []);
 
   const downloadExcel = () => {
     const worksheet = XLSX.utils.json_to_sheet(data);
@@ -49,14 +34,13 @@ function UserDetails() {
   return (
     <div className="">
       <>
-        {/* Add filter components here (e.g., dropdowns for state and district) */}
 
 
         <div className="pl-8 pt-4 mt-4 pr-4">
 
           <div className="px-4 flex justify-between bg-gray-100 items-center ">
             <div className="flex justify-around bg-gray-100 py-4 space-x-4 px-4">
-              <h2 className="text-2xl text-slate-900">Users</h2>
+              <h2 className="text-2xl text-slate-500  ">Users</h2>
             </div>
             <div>
               <button onClick={downloadExcel} className="bg-purple-400 text-white px-4 py-2 rounded">
@@ -72,7 +56,7 @@ function UserDetails() {
                   <th>S.no.</th>
                   <th>Email</th>
                   <th>SignIn Date</th>
-                  <th>Active</th>
+                  {/* <th>Active</th> */}
                 </tr>
               </thead>
 
@@ -91,12 +75,12 @@ function UserDetails() {
                       {index + 1}
                     </td>
                     <td>{item?.email}</td>
-                    <td>{moment(item?.createdAt).format("MMMM D, YYYY")}</td>
-                    <td className="text-center text-2xl text-blue-500  flex justify-center">
+                    <td>{moment(item?.signInDate).format("MMMM D, YYYY")}</td>
+                    {/* <td className="text-center text-2xl text-blue-500  flex justify-center">
                       <Link to={`/view-userDetails/${item._id}`}>
                         <AiFillEye />
                       </Link>
-                    </td>
+                    </td> */}
 
                   </tr>
                 ))}

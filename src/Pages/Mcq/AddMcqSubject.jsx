@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Navbar from '../../components/Navbar';
 import Sidebar from '../../components/Sidebar';
 import Cookies from 'js-cookie';
@@ -7,68 +7,84 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import 'react-quill/dist/quill.snow.css';
 import ReactQuill from 'react-quill';
+import { ADDDHYAAN } from '../../service';
 
 const AddDhyaan = () => {
   const [image, setImage] = useState(null);
   const [dhyaanName, setDhyaanName] = useState("");
   const [dhyaanDescription, setDhyaanDescription] = useState(""); // Optional
   const [editorContent, setEditorContent] = useState("");
+  const [editorHeight, setEditorHeight] = useState('auto'); // To store the height of the editor
 
-  const submitImage = async () => {
+  const editorRef = useRef(null); // Ref for accessing the editor
+
+  const [errors, setErrors] = useState({
+    dhyaanName: "",
+    editorContent: ""
+  });
+
+  const handleImageChange = (e) => {
+    setImage(e.target.files[0]);
+  };
+
+  const handleEditorChange = (value) => {
+    setEditorContent(value);
+    // Dynamically adjust the height of the editor
+    if (editorRef.current) {
+      const editor = editorRef.current.getEditor();
+      const editorContainer = editor.root;
+      setEditorHeight(editorContainer.scrollHeight);
+    }
+  };
+
+  const submitData = async () => {
+    const formData = new FormData();
+    formData.append("dhyaanName", dhyaanName);
+    formData.append("dhyaanDescription", dhyaanDescription);
+    formData.append("dhyaanContent", editorContent);
+    
+    // Only append image if it's selected
     if (image) {
-      const data = new FormData();
-      data.append("file", image);
-      data.append("upload_preset", "dakshin_murti");
+      formData.append("dhyaanPoster", image);
+    }
 
-      try {
-        const response = await fetch(
-          "https://api.cloudinary.com/v1_1/dkhh3ayz8/auto/upload",
-          {
-            method: "POST",
-            body: data,
-          }
-        );
-        const result = await response.json();
-        return result.secure_url;
-      } catch (error) {
-        console.error(error);
+    try {
+      let response = await ADDDHYAAN(formData);
+      if (response?.data?.success) {
+        toast.success(response?.data?.message);
+        // Clear form fields after submission
+        setDhyaanName("");
+        setDhyaanDescription("");
+        setEditorContent("");
+        setImage(null);
+        setErrors({});
+      } else {
+        toast.error(response?.error?.data?.message);
       }
+    } catch (error) {
+      console.error("Error adding dhyaan:", error);
+      toast.error('Error adding dhyaan.');
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!dhyaanName || !editorContent) {
-      toast.error('Dhyaan Name and Content are required');
-      return;
-    }
 
-    const imageUrl = await submitImage();
-
-    const payload = {
-      dhyaanName: dhyaanName,
-      dhyaanDescription: dhyaanDescription, // Optional
-      dhyaanContent: editorContent,
-      dhyaanPoster: imageUrl || "" // Optional image upload
+    // Validate the fields
+    const updatedErrors = {
+      dhyaanName: !dhyaanName ? "Dhyaan Name is required" : "",
+      editorContent: !editorContent ? "Dhyaan Content is required" : "",
     };
 
-    const jwtToken = Cookies.get('jwtToken');
+    setErrors(updatedErrors);
 
-    try {
-      const response = await privateRequest.post("/dhyaan/add", payload, {
-        headers: {
-          Authorization: `Bearer ${jwtToken}`
-        }
-      });
-      toast.success('Dhyaan added successfully!');
-      setDhyaanName("");
-      setDhyaanDescription("");
-      setEditorContent("");
-      setImage(null);
-    } catch (error) {
-      console.error(error);
-      toast.error('Failed to add Dhyaan');
+    const hasErrors = Object.values(updatedErrors).some((error) => !!error);
+
+    if (hasErrors) {
+      return; // Prevent submission if there are errors
     }
+
+    await submitData();
   };
 
   return (
@@ -76,28 +92,35 @@ const AddDhyaan = () => {
       <Navbar title={"Add Dhyaan"} />
       <Sidebar />
 
-      <div className="w-full max-w-3xl m-auto mt-8">
-        <form className="bg-gray-200 shadow-md rounded px-8 pt-6 pb-8 mb-4" onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2">
+      <div 
+      className="w-full max-w-4xl m-auto my-8 p-6 bg-white rounded-lg"
+      style={{ 
+        boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.06)' 
+      }}
+      >
+        <form onSubmit={handleSubmit}>
+          <div className="mb-6">
+            <label className="block text-gray-700 text-lg font-semibold mb-2">
               Dhyaan Name
             </label>
             <input
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              className="shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
               type="text"
               placeholder="Dhyaan Name"
               value={dhyaanName}
               onChange={(e) => setDhyaanName(e.target.value)}
             />
-            {!dhyaanName && <p className="text-red-500 text-xs italic">Dhyaan name is required</p>}
+            {errors.dhyaanName && (
+              <p className="text-red-500 text-sm mt-2 ml-1">{errors.dhyaanName}</p>
+            )}
           </div>
 
-          <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2">
+          <div className="mb-6">
+            <label className="block text-gray-700 text-lg font-semibold mb-2">
               Dhyaan Description (Optional)
             </label>
             <input
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              className="shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
               type="text"
               placeholder="Dhyaan Description"
               value={dhyaanDescription}
@@ -105,34 +128,40 @@ const AddDhyaan = () => {
             />
           </div>
 
-          <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2">
+          <div className="mb-6">
+            <label className="block text-gray-700 text-lg font-semibold mb-2">
               Dhyaan Content
             </label>
             <ReactQuill
               theme="snow"
               value={editorContent}
-              onChange={setEditorContent}
+              onChange={handleEditorChange} // Use the separate function here
+              ref={editorRef} // Attach the ref here
               className="bg-white"
+              style={{ minHeight: editorHeight }} // Dynamically adjust the height
             />
-            {!editorContent && <p className="text-red-500 text-xs italic">Dhyaan content is required</p>}
+            {errors.editorContent && (
+              <p className="text-red-500 text-sm mt-2">{errors.editorContent}</p>
+            )}
           </div>
 
-          <div className="mb-8">
-            <label className="block text-gray-700 text-sm font-bold mb-2">
-              Upload Dhyaan Poster (Optional)
+          <div className="mb-6">
+            <label className="block text-gray-700 text-lg font-semibold mb-2">
+              Upload Dhyaan Poster
             </label>
             <input
               type="file"
               accept="image/*"
-              onChange={(e) => setImage(e.target.files[0])}
+              onChange={handleImageChange}
+              className="mb-4 border border-gray-300 rounded p-2"
             />
             {image && (
-              <div>
+              <div className="mt-2 flex justify-center">
+                <p className="text-gray-700 text-sm mb-2">Image Preview:</p>
                 <img
-                  className="max-h-40 object-contain mt-4"
+                  className="max-h-60 object-contain border border-gray-300 rounded"
                   src={URL.createObjectURL(image)}
-                  alt="Uploaded"
+                  alt="Uploaded Preview"
                 />
               </div>
             )}

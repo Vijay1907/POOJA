@@ -28,6 +28,8 @@ import UpdateAbout from "./Pages/AboutUs/UpdateAbout";
 import AddUser from "./Pages/AddUser/AddUser.jsx";
 import AddAbout from "./Pages/AboutUs/AddAbout";
 import PdfViewer from "./Pages/PDFViewer/PDFViewer.jsx";
+import EditDhyaan from "./Pages/Mcq/EditDhyaan.jsx";
+import ForgotPassword from "./Pages/UserDetails/ForgotPassword.jsx";
 
 
 function App() {
@@ -77,6 +79,15 @@ function App() {
           }
         />
         <Route
+          path="/edit-dhyaan"
+          element={
+            <PrivateRoute>
+              <EditDhyaan />
+            </PrivateRoute>
+          }
+        />
+        
+        <Route
           path="/users"
           element={
             <PrivateRoute>
@@ -85,7 +96,7 @@ function App() {
           }
         />
         <Route
-          path="/view-userDetails/:id"
+          path="/view-userDetails"
           element={
             <PrivateRoute>
               <ViewUserDetails />
@@ -199,6 +210,7 @@ function App() {
         />
 
         <Route path="/login" element={<Login />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/otp-validate" element={<ValidateOtp />} />
         <Route path="/view-pdf" element={<PdfViewer />} />
       </Routes>

@@ -1,44 +1,124 @@
-import React from "react";
-import { PieChart, Pie, Cell } from "recharts";
+import React, { useEffect, useState } from "react";
 import Navbar from "../../components/Navbar";
 import Sidebar from "../../components/Sidebar";
 import HeaderSection from "./components/HeaderSection";
-import UserDetails from "../UserDetails/UserDetails";
-
-const COLORS = ["#FF6384", "#36A2EB", "#FFCE56"];
+import { GETDASHBOARDDATA } from "../../service";
 
 const DashBoard = () => {
-  return (
-    <div>
-      <Navbar title="Dashboard" />
-      <Sidebar />
-      <>
-        <div className="ml-10 mt-5">
-          <div className="">
-            <HeaderSection />
-          </div>
-          <div className="grid col-span-2">
-            {/* <PieChart width={400} height={200}>
-              <Pie
-                dataKey="value"
-                isAnimationActive={false}
-                data={data}
-                cx="50%"
-                cy="50%"
-                outerRadius={80}
-                fill="#8884d8"
-                label={(entry) => entry.name}
-              >
-                {data.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                ))}
-              </Pie>
-            </PieChart> */}
-          </div>
+  const [isLoading, setIsLoading] = useState(false);
+  const [data, setData] = useState({});
+  const [popularBookList, setPopularBookList] = useState([]);
+  const [popularDhyaanList, setPopularDhyaanList] = useState([]);
 
-          <UserDetails />
+  const getData = async () => {
+    try {
+      setIsLoading(true);
+      let response = await GETDASHBOARDDATA();
+      setData(response?.data?.cardCounts);
+      setPopularBookList(response?.data?.books.slice(0, 4)); // Show only first 4 books
+      setPopularDhyaanList(response?.data?.dhyaans.slice(0, 4)); // Show only first 4 dhyaans
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    getData();
+  }, []);
+
+  return (
+    <div className="min-h-screen bg-gray-100">
+      <Navbar title="Dashboard" />
+      <div className="flex ml-10">
+        <Sidebar />
+        <div className="flex-1 p-6 mx-8">
+          <HeaderSection data={data} />
+          
+          <div className="mt-12">
+            {/* Top Viewed Books Section */}
+            <div className="bg-white shadow-lg rounded-lg overflow-hidden mb-8">
+              <div className="px-6 py-4 bg-indigo-100 flex justify-between items-center">
+                <h2 className="text-xl font-bold text-indigo-700">Top Viewed Books</h2>
+                <span className="text-sm text-indigo-500">Total Books: {popularBookList.length}</span>
+              </div>
+              {isLoading ? (
+                <div className="p-4">Loading...</div>
+              ) : (
+                <div className="flex overflow-x-auto space-x-9 p-6 ">
+               {popularBookList?.map((book, index) => (
+  <div
+    key={index}
+    className="min-w-[250px] border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-lg transition-shadow duration-300 hover:transform hover:scale-105 bg-white p-5"
+  >
+    <div className="flex justify-center items-center h-48">
+      <img
+        src={book.coverImage}
+        alt={book.bookName}
+        className="max-w-full max-h-full object-contain"
+      />
+    </div>
+    <div className="p-4 pb-0 text-center bg-white">
+      <h3 className="text-lg font-semibold text-gray-800 mb-2">
+        {book.bookName}
+      </h3>
+      {/* <p className="text-gray-600 text-sm line-clamp-3">
+        {book.bookDescription}
+      </p> */}
+      <div className="text-sm text-gray-500">
+        <span className="font-medium">Clicks:</span> {book.clicks}
+      </div>
+    </div>
+  </div>
+))}
+
+
+                </div>
+              )}
+            </div>
+
+            {/* Top Viewed Dhyaans Section */}
+            <div className="bg-white shadow-lg rounded-lg overflow-hidden">
+              <div className="px-6 py-4 bg-red-100 flex justify-between items-center">
+                <h2 className="text-xl font-bold text-red-700">Top Viewed Dhyaans</h2>
+                <span className="text-sm text-red-500">Total Dhyaans: {popularDhyaanList.length}</span>
+              </div>
+              {isLoading ? (
+                <div className="p-4">Loading...</div>
+              ) : (
+                <div className="flex overflow-x-auto space-x-9 p-6">
+                  {popularDhyaanList?.map((dhyaan, index) => (
+                    <div
+                      key={index}
+                      className="min-w-[250px] border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-lg transition-shadow duration-300 hover:transform hover:scale-105 bg-white p-5"
+                    >
+                       <div className="flex justify-center items-center h-48">
+                      <img
+                        src={dhyaan.dhyaanPoster}
+                        alt={dhyaan.dhyaanName}
+                        className="max-w-full max-h-full object-contain"
+                      />
+                       </div>
+                      <div className="p-4 pb-0 text-center bg-white">
+                      <h3 className="text-lg font-semibold text-gray-800 mb-2">
+                          {dhyaan.dhyaanName}
+                        </h3>
+                        {/* <p className="text-gray-600 text-sm line-clamp-3">
+                          {dhyaan.dhyaanDescription}
+                        </p> */}
+                        <div className="text-sm text-gray-500">
+                          <span className="font-medium">Clicks:</span> {dhyaan.clicks}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
         </div>
-      </>
+      </div>
     </div>
   );
 };
