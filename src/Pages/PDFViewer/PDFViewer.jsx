@@ -7,8 +7,8 @@ const PdfViewer = () => {
 
     return (
         <div className="min-h-screen bg-gray-100 p-4">
-            <div className="flex justify-between items-center mb-4">
-                <h1 className="text-2xl font-semibold">PDF Viewer</h1>
+            <div className="flex justify-end items-center mb-4">
+                {/* <h1 className="text-2xl font-semibold">PDF Viewer</h1> */}
                 <Link to="/books">
                     <button className="bg-blue-500 text-white py-2 px-4 rounded">
                         Back to Books
