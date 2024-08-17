@@ -8,6 +8,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import 'react-quill/dist/quill.snow.css';
 import ReactQuill from 'react-quill';
 import { ADDDHYAAN } from '../../service';
+import { useNavigate } from 'react-router-dom';
 
 const AddDhyaan = () => {
   const [image, setImage] = useState(null);
@@ -17,6 +18,7 @@ const AddDhyaan = () => {
   const [editorHeight, setEditorHeight] = useState('auto'); // To store the height of the editor
 
   const editorRef = useRef(null); // Ref for accessing the editor
+  const navigate = useNavigate();
 
   const [errors, setErrors] = useState({
     dhyaanName: "",
@@ -42,7 +44,7 @@ const AddDhyaan = () => {
     formData.append("dhyaanName", dhyaanName);
     formData.append("dhyaanDescription", dhyaanDescription);
     formData.append("dhyaanContent", editorContent);
-    
+
     // Only append image if it's selected
     if (image) {
       formData.append("dhyaanPoster", image);
@@ -52,6 +54,7 @@ const AddDhyaan = () => {
       let response = await ADDDHYAAN(formData);
       if (response?.data?.success) {
         toast.success(response?.data?.message);
+        navigate("/dhyaan")
         // Clear form fields after submission
         setDhyaanName("");
         setDhyaanDescription("");
@@ -87,16 +90,20 @@ const AddDhyaan = () => {
     await submitData();
   };
 
+  const handleCancelClick = () => {
+    navigate("/dhyaan")
+  }
+
   return (
     <div>
       <Navbar title={"Add Dhyaan"} />
       <Sidebar />
 
-      <div 
-      className="w-full max-w-4xl m-auto my-8 p-6 bg-white rounded-lg"
-      style={{ 
-        boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.06)' 
-      }}
+      <div
+        className="w-full max-w-4xl m-auto my-8 p-6 bg-white rounded-lg"
+        style={{
+          boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.06)'
+        }}
       >
         <form onSubmit={handleSubmit}>
           <div className="mb-6">
@@ -168,12 +175,20 @@ const AddDhyaan = () => {
           </div>
 
           <div className="flex items-center justify-end">
-            <button
-              className="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-              type="submit"
-            >
-              Add Dhyaan
-            </button>
+            <div>
+              <button
+                onClick={handleCancelClick}
+                className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mr-3"
+              >
+                Cancel
+              </button>
+              <button
+                className="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                type="submit"
+              >
+                Add Dhyaan
+              </button>
+            </div>
           </div>
         </form>
       </div>

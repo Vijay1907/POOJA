@@ -2,6 +2,7 @@ import { useState } from 'react';
 import Navbar from '../../components/Navbar';
 import Sidebar from '../../components/Sidebar';
 import Cookies from 'js-cookie';
+import { useNavigate } from 'react-router-dom';
 import { privateRequest } from '../../configs/RequestMethod';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -17,6 +18,7 @@ const AddBooks = () => {
     bookName: "",
     bookPdf: null
   });
+  const navigate = useNavigate();
 
   const submitData = async () => {
     if (image && bookPdf) {
@@ -29,6 +31,7 @@ const AddBooks = () => {
         let response = await ADDBOOK(formData)
         if (response?.data?.success) {
           toast.success(response?.data?.message);
+          navigate("/books")
           // Clear form fields after submission
           setBookName("");
           setBookDescription("");
@@ -61,6 +64,9 @@ const AddBooks = () => {
 
     await submitData();
   };
+  const handleCancelClick = () => {
+    navigate("/books")
+  }
 
   return (
     <div>
@@ -155,12 +161,21 @@ const AddBooks = () => {
           </div>
 
           <div className="flex items-center justify-end">
-            <button
-              className="bg-purple-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-              type="submit"
-            >
-              Add Book
-            </button>
+            <div>
+              <button
+                onClick={handleCancelClick}
+                className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mr-3"
+              >
+                Cancel
+              </button>
+              <button
+                className="bg-purple-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                type="submit"
+              >
+                Add Book
+              </button>
+            </div>
+
           </div>
         </form>
       </div>

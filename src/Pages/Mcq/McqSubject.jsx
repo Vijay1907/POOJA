@@ -5,7 +5,7 @@ import Navbar from '../../components/Navbar';
 import Sidebar from '../../components/Sidebar';
 import { toast } from 'react-toastify';
 import { DELETEDHYAAN, GETDHYAAN } from '../../service';
-import DeleteDhyaan from './DeleteDhyaan'; 
+import DeleteDhyaan from './DeleteDhyaan';
 import Description from '../../components/Description';
 
 const Dhyaan = () => {
@@ -34,7 +34,7 @@ const Dhyaan = () => {
 
   const deleteDhyaan = async (id) => {
     try {
-     let response= await DELETEDHYAAN(id);
+      let response = await DELETEDHYAAN(id);
       getAllDhyaan();
       setIsDeleteModalOpen(false);
       toast.success(response?.data?.message);
@@ -47,7 +47,7 @@ const Dhyaan = () => {
   const handleEditClick = (dhyaan) => {
     navigate('/edit-dhyaan', { state: { dhyaan } });
   };
-  
+
 
   const handleDeleteClick = (dhyaan) => {
     setSelectedDhyaan(dhyaan);
@@ -76,10 +76,10 @@ const Dhyaan = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 ml-5">
             {dhyaanList?.map((dhyaan, index) => (
               <div key={index} className="bg-white border border-gray-200 rounded-lg shadow-md overflow-hidden">
-                  <div className='flex items-center justify-center'>
-                <img src={dhyaan.dhyaanPoster} alt={dhyaan.dhyaanName} className="h-[180px] object-contain mt-3" />
+                <div className='flex items-center justify-center'>
+                  <img src={dhyaan.dhyaanPoster} alt={dhyaan.dhyaanName} className="h-[180px] object-contain mt-3" />
                 </div>
-              <div className="p-4 pb-2">
+                <div className="p-4 pb-2">
                   <hr className="border-gray-300 mb-3" />
                   <h3 className="text-lg font-semibold mb-2">{dhyaan.dhyaanName}</h3>
                   <Description description={dhyaan.dhyaanDescription} />
