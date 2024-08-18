@@ -1,8 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Navbar from '../../components/Navbar';
 import Sidebar from '../../components/Sidebar';
-import Cookies from 'js-cookie';
-import { privateRequest } from '../../configs/RequestMethod';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import 'react-quill/dist/quill.snow.css';
@@ -12,8 +10,8 @@ import { useNavigate } from 'react-router-dom';
 
 const AddDhyaan = () => {
   const [image, setImage] = useState(null);
-  const [dhyaanName, setDhyaanName] = useState("");
-  const [dhyaanDescription, setDhyaanDescription] = useState(""); // Optional
+  const [dhyanName, setdhyanName] = useState("");
+  const [dhyanDescription, setDhyaanDescription] = useState(""); // Optional
   const [editorContent, setEditorContent] = useState("");
   const [editorHeight, setEditorHeight] = useState('auto'); // To store the height of the editor
 
@@ -21,7 +19,7 @@ const AddDhyaan = () => {
   const navigate = useNavigate();
 
   const [errors, setErrors] = useState({
-    dhyaanName: "",
+    dhyanName: "",
     editorContent: ""
   });
 
@@ -41,13 +39,13 @@ const AddDhyaan = () => {
 
   const submitData = async () => {
     const formData = new FormData();
-    formData.append("dhyaanName", dhyaanName);
-    formData.append("dhyaanDescription", dhyaanDescription);
-    formData.append("dhyaanContent", editorContent);
+    formData.append("dhyanName", dhyanName);
+    formData.append("dhyanDescription", dhyanDescription);
+    formData.append("dhyanContent", editorContent);
 
     // Only append image if it's selected
     if (image) {
-      formData.append("dhyaanPoster", image);
+      formData.append("dhyanPoster", image);
     }
 
     try {
@@ -56,7 +54,7 @@ const AddDhyaan = () => {
         toast.success(response?.data?.message);
         navigate("/dhyaan")
         // Clear form fields after submission
-        setDhyaanName("");
+        setdhyanName("");
         setDhyaanDescription("");
         setEditorContent("");
         setImage(null);
@@ -75,7 +73,7 @@ const AddDhyaan = () => {
 
     // Validate the fields
     const updatedErrors = {
-      dhyaanName: !dhyaanName ? "Dhyaan Name is required" : "",
+      dhyanName: !dhyanName ? "Dhyaan Name is required" : "",
       editorContent: !editorContent ? "Dhyaan Content is required" : "",
     };
 
@@ -114,11 +112,11 @@ const AddDhyaan = () => {
               className="shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
               type="text"
               placeholder="Dhyaan Name"
-              value={dhyaanName}
-              onChange={(e) => setDhyaanName(e.target.value)}
+              value={dhyanName}
+              onChange={(e) => setdhyanName(e.target.value)}
             />
-            {errors.dhyaanName && (
-              <p className="text-red-500 text-sm mt-2 ml-1">{errors.dhyaanName}</p>
+            {errors.dhyanName && (
+              <p className="text-red-500 text-sm mt-2 ml-1">{errors.dhyanName}</p>
             )}
           </div>
 
@@ -130,7 +128,7 @@ const AddDhyaan = () => {
               className="shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
               type="text"
               placeholder="Dhyaan Description"
-              value={dhyaanDescription}
+              value={dhyanDescription}
               onChange={(e) => setDhyaanDescription(e.target.value)}
             />
           </div>

@@ -1,3 +1,12 @@
+
+
+.loading-active {
+    opacity: 0.5;
+    pointer-events: none; 
+    user-select: none;    
+  }
+  
+
 .profile-card h1 {
     font-size: 18px;
     margin-bottom: 20px;

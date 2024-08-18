@@ -1,5 +1,5 @@
-import { FaUsers, FaBookOpen, FaBrain } from "react-icons/fa";
-import { BsFillBookFill, BsFillQuestionCircleFill } from "react-icons/bs";
+import { FaUsers, FaBrain } from "react-icons/fa";
+import { BsFillBookFill } from "react-icons/bs";
 
 const HeaderSection = ({ data }) => {
   return (

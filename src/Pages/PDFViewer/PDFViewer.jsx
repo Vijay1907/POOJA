@@ -1,5 +1,6 @@
 import React from 'react';
 import { useLocation, Link } from 'react-router-dom';
+import { BACKEND_URL } from '../../configs/RequestMethod';
 
 const PdfViewer = () => {
     const location = useLocation();
@@ -18,7 +19,7 @@ const PdfViewer = () => {
             <div className="pdf-viewer-container">
                 {pdfUrl ? (
                     <embed
-                        src={pdfUrl}
+                        src={BACKEND_URL+"/"+ pdfUrl}
                         type="application/pdf"
                         width="100%"
                         height="600px"

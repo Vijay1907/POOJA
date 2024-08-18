@@ -1,32 +1,36 @@
 import { useState } from 'react';
 import Navbar from '../../components/Navbar';
 import Sidebar from '../../components/Sidebar';
-import Cookies from 'js-cookie';
 import { useNavigate } from 'react-router-dom';
-import { privateRequest } from '../../configs/RequestMethod';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { FaFilePdf } from 'react-icons/fa';
 import { ADDBOOK } from '../../service';
+import Loader from '../Loader/Loader';
 
 const AddBooks = () => {
   const [image, setImage] = useState(null);
   const [bookName, setBookName] = useState("");
   const [bookDescription, setBookDescription] = useState("");
-  const [bookPdf, setBookPdf] = useState(null);
+  const [pdfUrl, setBookPdf] = useState(null);
   const [errors, setErrors] = useState({
     bookName: "",
-    bookPdf: null
+    pdfUrl: null
   });
+  const [isLoading, setIsLoading] = useState(false); // Add loading state
   const navigate = useNavigate();
 
   const submitData = async () => {
-    if (image && bookPdf) {
-      const formData = new FormData();
-      formData.append("bookName", bookName);
-      formData.append("bookDescription", bookDescription);
-      formData.append("coverImage", image);  // Binary file
-      formData.append("bookPdf", bookPdf);  // Binary file
+    setIsLoading(true)
+    const formData = new FormData();
+    if(image){
+      formData.append("coverImage", image);  // Binary file 
+    }
+    if(bookDescription){
+      formData.append("bookDescription", bookDescription); 
+    }
+      formData.append("bookName", bookName); 
+      formData.append("pdfUrl", pdfUrl);  // Binary file
       try {
         let response = await ADDBOOK(formData)
         if (response?.data?.success) {
@@ -44,15 +48,16 @@ const AddBooks = () => {
       } catch (error) {
         console.error("Error adding book:", error);
         toast.error('Error adding book.');
+      }finally{
+        setIsLoading(false); 
       }
-    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     const updatedErrors = {
       bookName: !bookName && "Book Name is required",
-      bookPdf: !bookPdf && "Book PDF is required",
+      pdfUrl: !pdfUrl && "Book PDF is required",
     };
 
     const hasErrors = Object.values(updatedErrors).some((error) => !!error);
@@ -64,6 +69,7 @@ const AddBooks = () => {
 
     await submitData();
   };
+  
   const handleCancelClick = () => {
     navigate("/books")
   }
@@ -72,6 +78,8 @@ const AddBooks = () => {
     <div>
       <Navbar title={"Add Book"} />
       <Sidebar />
+
+      {isLoading && <Loader />} {/* Show loader while loading */}
 
       <div className="w-full max-w-xl m-auto mt-8 ">
         <form
@@ -135,19 +143,14 @@ const AddBooks = () => {
               Book PDF
             </label>
             <div className="flex flex-col w-full h-full p-1 gap-1 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50  dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
-
-
-
               <input
                 type="file"
                 accept="application/pdf"
                 className=""
                 onChange={(e) => setBookPdf(e.target.files[0])}
               />
-
-
             </div>
-            {bookPdf && (
+            {pdfUrl && (
               <div className="flex items-center gap-2 mt-1">
                 <FaFilePdf className="text-red-500" size={20} />
                 <p className="text-sm font-semibold text-center text-gray-600">
@@ -155,8 +158,8 @@ const AddBooks = () => {
                 </p>
               </div>
             )}
-            {errors.bookPdf && (
-              <p className="text-red-500 text-sm">{errors.bookPdf}</p>
+            {errors.pdfUrl && (
+              <p className="text-red-500 text-sm">{errors.pdfUrl}</p>
             )}
           </div>
 
@@ -175,7 +178,6 @@ const AddBooks = () => {
                 Add Book
               </button>
             </div>
-
           </div>
         </form>
       </div>

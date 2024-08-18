@@ -11,146 +11,9 @@ const coverImage="https://m.media-amazon.com/images/I/715smRhK8JL._AC_UF1000,100
 
 export const brandImg ="https://w7.pngwing.com/pngs/898/783/png-transparent-om-namaste-hinduism-symbol-yoga-hindu-gods-text-trademark-logo.png"
 
-const dhyaans = [
-    {
-        _id: "123",
-        dhyaanName: "Geeta",
-        dhyaanDescription: "Geeta is the holy book",
-        dhyaanPoster,
-        active: false,
-        added:true,
-        clicks:3,
-    },
-    {
-        _id: "1231",
-        dhyaanName: "Geeta",
-        dhyaanDescription: "Geeta is the holy book",
-        dhyaanPoster,
-        active: false,
-        added:true,
-        clicks:37,
-    },
-    {
-        _id: "1232",
-        dhyaanName: "Geeta",
-        dhyaanDescription: "Geeta is the holy book",
-        dhyaanPoster,
-        active: false,
-        added:true,
-        clicks:3,
-    },
-    {
-        _id: "1233",
-        dhyaanName: "Geeta",
-        dhyaanDescription: "Geeta is the holy book",
-        dhyaanPoster,
-        active: false,
-        added:true,
-        clicks:3,
-    },
-    {
-        _id: "1293",
-        dhyaanName: "Geeta",
-        dhyaanDescription: "Geeta is the holy book",
-        dhyaanPoster,
-        active: false,
-        added:true,
-    },
-   
-]
-
-const books = [
-    {
-        _id: "123",
-        bookName: "Geeta",
-        bookDescription: "Geeta is the holy book",
-        coverImage:coverImage,
-        bookPdf: pdfUrl,
-        active: false,
-        added:false,
-    },
-    {
-        _id: "124",
-        bookName: "Geeta",
-        bookDescription: "Geeta is the holy book",
-        coverImage:coverImage,
-        bookPdf: pdfUrl,
-        active: true,
-        added:true,
-        clicks:3,
-    },
-    {
-        _id: "125",
-        bookName: "Geeta",
-        bookDescription: "Geeta is the holy book",
-        coverImage:coverImage,
-        bookPdf: pdfUrl,
-        active: true,
-        added:true,
-        clicks:3,
-    },
-    {
-        _id: "126",
-        bookName: "Geeta",
-        bookDescription: "Geeta is the holy book",
-        coverImage:coverImage,
-        bookPdf: pdfUrl,
-        active: false,
-        added:true,
-        clicks:3,
-    },
-    {
-        _id: "127",
-        bookName: "Geeta",
-        bookDescription: "Geeta is the holy book",
-        coverImage:coverImage,
-        bookPdf: pdfUrl,
-        active: true,
-        added:true,
-        clicks:3,
-    },
-]
-
-const users = [
-    {
-        _id:"1",
-        email:"neha@gmail.com",
-        createdAt:"2024-03-27T06:09:11.510+00:00",
-        active:true
-    },
-    {
-        _id:"2",
-        email:"sohan@gmail.com",
-        createdAt:"2024-03-27T06:09:11.510+00:00",
-        active:true
-    },
-    {
-        _id:"3",
-        email:"neh2a@gmail.com",
-        createdAt:"2024-03-27T06:09:11.510+00:00",
-        active:true
-    },
-    {
-        _id:"4",
-        email:"neha@gmail.com",
-        createdAt:"2024-03-27T06:09:11.510+00:00",
-        active:true
-    },
-]
 
 export const USERLOGIN = async (formData, navigate, dispatch) => {
-    // const response = await privateRequest.post('/users/adminLogin', formData);
-    const response = {
-        data: {
-            token: "41331313131312313131313313123",
-            user: {
-                name: "Karan Kohli",
-                role: "Admin",
-                email: "karan@gmail.com"
-            },
-            message: "Logged in Successfully"
-        }
-    }
+    const response = await privateRequest.post('/login', formData);
     dispatch(login(response?.data));
     const { token } = response.data;
     Cookies.set('jwtToken', token);
@@ -166,29 +29,31 @@ export const USERLOGOUT =( navigate, dispatch) => {
 }
 
 export const UPDATEADMINDETAILS = async (formData, dispatch) => {
-    // const response = await privateRequest.post('/users/updateAdmin', formData);
-    const response = {
-        data: {
-            user: {
-                name: "Vijay Raj",
-                role: "Admin",
-                email: "vijay@gmail.com"
-            },
-            message: "Profile Updated Successfully"
+    const response = await privateRequest.put('/profile', formData,{
+        headers: {
+        Authorization: `Bearer ${jwtToken}`,
         }
-    }
-    dispatch(changeUserData(response?.data));
+  });
+    dispatch(login(response?.data));
     toast.success(response.data.message)
 }
 
-export const CHANGEPASSWORD = async (formData, navigate,dispatch) => {
-    // const response = await privateRequest.post('/users/changePassword', formData);
-    const response = {
-        data: {
-            success:true,
-            message: "Password Changed Successfully"
+export const GETPROFILE = async () => {
+    const response = await privateRequest.get('/profile',{
+        headers: {
+        Authorization: `Bearer ${jwtToken}`,
         }
-    }
+  });
+    return response
+}
+
+export const CHANGEPASSWORD = async (formData, navigate,dispatch) => {
+    console.log("jwtToken",jwtToken)
+    const response = await privateRequest.put('/change_password', formData,{
+              headers: {
+              Authorization: `Bearer ${jwtToken}`,
+        },
+    });
     dispatch(logout(response?.data));
     toast.success(response.data.message)
     localStorage.removeItem('user');
@@ -197,187 +62,129 @@ export const CHANGEPASSWORD = async (formData, navigate,dispatch) => {
 }
 
 export const GETDASHBOARDDATA = async () => {
-    // const response = await privateRequest.get('/users/adminDashboard', {
-    //     headers: {
-    //         Authorization: `Bearer ${jwtToken}`,
-    //     },
-    // });
-    const response = {
-        data: {
-            cardCounts:{
-                userCount: 16,
-                bookCount: 12,
-                dhyaanCount: 34
-            },
-            books:books,
-            dhyaans:dhyaans
-        }
-    }
+    const response = await privateRequest.get('/dashboard', {
+        headers: {
+            Authorization: `Bearer ${jwtToken}`,
+        },
+    });
     return response
 }
 
 export const ADDBOOK = async (formData) => {
-    // const response = await privateRequest.post("/book", formData, {
-    //     headers: {
-    //         Authorization: `Bearer ${jwtToken}`,
-    //         'Content-Type': 'multipart/form-data'
-    //     }
-    // });
-    const response = {
-        data: {
-            success: true,
-            message: "Book added successfully"
+    const response = await privateRequest.post("/book", formData, {
+        headers: {
+            Authorization: `Bearer ${jwtToken}`,
+            'Content-Type': 'multipart/form-data'
         }
-    }
+    });
     return response
 }
 
-export const GETBOOKS = async () => {
-    // const response = await privateRequest.get("/book");
-    const response = {
-        data: {
-            success: true,
-            data: books
-        }
-    }
+export const GETBOOKS = async (searchTerm = "", page = 1, limit = 10) => {
+    const response = await privateRequest.get(`/all_books`, {
+        headers: {
+            Authorization: `Bearer ${jwtToken}`,
+        },
+        params: {
+            search: searchTerm,
+            page: page,
+            limit: limit,
+        },
+    });
     return response
 }
 
-export const UPDATEBOOK = async (formData, id) => {
-    // const response = await privateRequest.put(`/book/${id}`,formData,{
-    //    headers: {
-    //         Authorization: `Bearer ${jwtToken}`,
-    //         'Content-Type': 'multipart/form-data'
-    //     }
-    // });
-    const response = {
-        data: {
-            success: true,
-            message: "Book Updated Successfully",
+
+export const UPDATEBOOK = async ( id,formData) => {
+    const response = await privateRequest.put(`/book/${id}`,formData,{
+       headers: {
+            Authorization: `Bearer ${jwtToken}`,
+            'Content-Type': 'multipart/form-data'
         }
-    }
+    });
     return response
 }
 
 export const DELETEBOOK = async (id) => {
-    // const response = await privateRequest.delete(`/book/${id}`,{
-    //    headers: {
-    //         Authorization: `Bearer ${jwtToken}`,
-    //     }
-    // });
-    const response = {
-        data: {
-            success: true,
-            message: "Book Deleted Successfully",
+    const response = await privateRequest.delete(`/book/${id}`,{
+       headers: {
+            Authorization: `Bearer ${jwtToken}`,
         }
-    }
+    });
     return response
 }
 
 export const ADDDHYAAN = async (formData) => {
-    // const response = await privateRequest.post("/dhyaan", formData, {
-    //     headers: {
-    //         Authorization: `Bearer ${jwtToken}`,
-    //         'Content-Type': 'multipart/form-data'
-    //     }
-    // });
-    const response = {
-        data: {
-            success: true,
-            message: "Dhyaan added successfully"
+    const response = await privateRequest.post("/dhyaan", formData, {
+        headers: {
+            Authorization: `Bearer ${jwtToken}`,
+            'Content-Type': 'multipart/form-data'
         }
-    }
+    });
     return response
 }
 
-export const GETDHYAAN = async () => {
-    // const response = await privateRequest.get("/dhyaan");
-    const response = {
-        data: {
-            success: true,
-            data: dhyaans
-        }
-    }
+export const GETDHYAAN = async (searchTerm = "", page = 1, limit = 10) => {
+    const response = await privateRequest.get("/all_dhyaans",{
+        headers: {
+            Authorization: `Bearer ${jwtToken}`,
+        },
+        params: {
+            search: searchTerm,
+            page: page,
+            limit: limit,
+        },
+    });
     return response
 }
 
-export const UPDATEDHYAAN = async (formData, id) => {
-    // const response = await privateRequest.put(`/dhyaan/${id}`,formData,{
-    //    headers: {
-    //         Authorization: `Bearer ${jwtToken}`,
-    //         'Content-Type': 'multipart/form-data'
-    //     }
-    // });
-    const response = {
-        data: {
-            success: true,
-            message: "Dhyaan Updated Successfully",
+export const UPDATEDHYAAN = async ( id,formData) => {
+    const response = await privateRequest.put(`/dhyaan/${id}`,formData,{
+       headers: {
+            Authorization: `Bearer ${jwtToken}`,
+            'Content-Type': 'multipart/form-data'
         }
-    }
+    });
     return response
 }
 
 export const DELETEDHYAAN = async (id) => {
-    // const response = await privateRequest.delete(`/dhyaan/${id}`,{
-    //    headers: {
-    //         Authorization: `Bearer ${jwtToken}`,
-    //     }
-    // });
-    const response = {
-        data: {
-            success: true,
-            message: "Dhyaan Deleted Successfully",
+    const response = await privateRequest.delete(`/dhyaan/${id}`,{
+       headers: {
+            Authorization: `Bearer ${jwtToken}`,
         }
-    }
+    });
     return response
 }
 
-export const GETUSERS = async (id) => {
-    // const response = await privateRequest.get(`/allUsers/`,{
-    //    headers: {
-    //         Authorization: `Bearer ${jwtToken}`,
-    //     }
-    // });
-    const response = {
-        data: {
-            success: true,
-            data:users
-        }
-    }
+export const GETUSERS = async (page,limit) => {
+    const response = await privateRequest.get(`/getAllUsers/`,{
+       headers: {
+            Authorization: `Bearer ${jwtToken}`,
+        },
+        params: {
+            page: page,
+            limit: limit,
+        },
+    });
     return response
 }
 
 export const FORGOTPASSWORD = async (formData) => {
-    // const response = await privateRequest.post("/user/forgotPassword", formData, {
-    // });
-    const response = {
-        data: {
-            success: true,
-        }
-    }
+    const response = await privateRequest.post("/forget_password", formData, {
+    });
     return response
 }
 
 export const VERIFYOTP = async (formData) => {
-    // const response = await privateRequest.post("/user/verifyOTP", formData, {
-    // });
-    const response = {
-        data: {
-            success: true,
-        }
-    }
+    const response = await privateRequest.post("/verify_otp", formData, {
+    });
     return response
 }
 
 export const RESETPASSWORD = async (formData,navigate) => {
-    // const response = await privateRequest.post("/user/resetPassword", formData, {
-    // });
-    const response = {
-        data: {
-            success: true,
-            message:"Password Reset Successfully. You can login now."
-        }
-    }
+    const response = await privateRequest.post("/reset_password", formData, {
+    });
     navigate("/login")
     return response
 }

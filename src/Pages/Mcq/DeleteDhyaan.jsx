@@ -1,5 +1,4 @@
 import React from 'react';
-import { BsFillTrashFill } from "react-icons/bs";
 
 const DeleteDhyaanModal = ({ isOpen, onClose, onConfirm, dhyaan }) => {
   if (!isOpen) return null;
@@ -9,7 +8,7 @@ const DeleteDhyaanModal = ({ isOpen, onClose, onConfirm, dhyaan }) => {
       <div className="bg-white rounded-lg overflow-hidden shadow-lg max-w-sm w-full">
         <div className="p-4">
           <h2 className="text-lg font-bold mb-4">Confirm Deletion</h2>
-          <p>Are you sure you want to delete <strong>{dhyaan?.dhyaanName}</strong>?</p>
+          <p>Are you sure you want to delete this dhyaan?</p>
           <div className="flex justify-end mt-4">
             <button type="button" onClick={onClose} className="bg-gray-500 text-white py-2 px-4 rounded mr-2">
               Cancel

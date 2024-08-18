@@ -1,9 +1,12 @@
+// src/components/Login/Login.jsx
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import { FORGOTPASSWORD, USERLOGIN } from '../../service';
-import { loginPageImg } from '../../service'; // Make sure this path is correct
+import { loginPageImg } from '../../service';
+import Loader from '../Loader/Loader';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -17,6 +20,7 @@ const Login = () => {
     email: '',
     password: '',
   });
+  const [loading, setLoading] = useState(false); // Loader state
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -33,7 +37,6 @@ const Login = () => {
         password: !formData.password && 'Password is required',
       };
 
-      // Check if email is present and if it matches the email pattern
       if (updatedErrors.email === '' || !/^\S+@\S+\.\S+$/.test(formData.email)) {
         updatedErrors.email = 'Invalid email address';
       }
@@ -44,12 +47,15 @@ const Login = () => {
         setErrors(updatedErrors);
       } else {
         setErrors({});
+        setLoading(true);  // Show loader
         await USERLOGIN(formData, navigate, dispatch);
         navigate('/');
       }
     } catch (error) {
       toast.error(error?.response?.data?.message);
       console.error('Error:', error);
+    } finally {
+      setLoading(false);  // Hide loader
     }
   };
 
@@ -61,33 +67,33 @@ const Login = () => {
       } else if (!/^\S+@\S+\.\S+$/.test(formData.email)) {
         error = 'Invalid email address';
       }
-  
+
       if (error) {
         toast.error(error);
         return;
       }
-  
+
       const myData = {
         email: formData.email,
       };
-  
+
+      setLoading(true);  // Show loader
       const response = await FORGOTPASSWORD(myData);
       if (response?.data?.success) {
-        // Save email to session storage
         sessionStorage.setItem('forgotPasswordEmail', formData.email);
-        
-        // Navigate to forgot password page
         navigate('/forgot-password');
       }
     } catch (err) {
       console.error(err);
       toast.error(err?.response?.data?.message || 'An error occurred');
+    } finally {
+      setLoading(false);  // Hide loader
     }
   };
-  
 
   return (
     <div className="flex h-screen bg-gray-100">
+      {loading && <Loader />}  {/* Display Loader when loading */}
       <div className="w-1/2 bg-white flex items-center justify-center">
         <img src={loginPageImg} alt="Login" className="max-h-[100vh]" />
       </div>

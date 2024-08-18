@@ -5,9 +5,9 @@ const REACT_APP_CLOUDINARY_KEY = "dakshin_murti";
 // const REACT_APP_BASE_URL = "http://localhost:3089"; 
 
 
-const REACT_APP_BASE_URL = "http://server.ap-south-1.elasticbeanstalk.com";
+export const BACKEND_URL = import.meta.env.VITE_API_URL;
 
-const BASE_URL = REACT_APP_BASE_URL + "/api/v1";
+const BASE_URL = BACKEND_URL + "/api/admin";
 
 export const privateRequest = axios.create({
   baseURL: BASE_URL,

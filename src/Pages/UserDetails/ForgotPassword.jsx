@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { VERIFYOTP, RESETPASSWORD, FORGOTPASSWORD } from '../../service';
 import { toast } from 'react-toastify';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
+import Loader from '../Loader/Loader'; // Assuming you have a Loader component
 
 const ForgotPassword = () => {
   const email = sessionStorage.getItem('forgotPasswordEmail');
@@ -12,12 +13,16 @@ const ForgotPassword = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [otpVerified, setOtpVerified] = useState(false);
   const [error, setError] = useState('');
-  const [resendTimer, setResendTimer] = useState(20); // 20 seconds for testing
+  const [resendTimer, setResendTimer] = useState(120);
   const [passwordError, setPasswordError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [loading, setLoading] = useState(true); // Set initial loading to true
 
   useEffect(() => {
+    // Reset the loading state after initial data fetch
+    setLoading(false);
+
     const timer =
       resendTimer > 0 &&
       setInterval(() => setResendTimer((prev) => prev - 1), 1000);
@@ -27,15 +32,12 @@ const ForgotPassword = () => {
 
   const handleOtpChange = (e, index) => {
     const value = e.target.value;
-    console.log("opt change",index,value)
     const updatedOtp = [...otp];
 
     if (/^\d$/.test(value)) {
-      // Update the current field if the value is a digit
       updatedOtp[index] = value;
       setOtp(updatedOtp);
 
-      // Move focus to the next input if the current field is filled
       if (index < otp.length - 1 && value !== '') {
         document.getElementById(`otp-${index + 1}`).focus();
       }
@@ -43,32 +45,21 @@ const ForgotPassword = () => {
   };
 
   const handleOtpKeyDown = (e, index) => {
-    console.log("opt key down",index)
     if (e.key === 'Backspace') {
-      console.log("opt key down backspace",index)
       const updatedOtp = [...otp];
-      if(updatedOtp[index] === ''){
-
-        console.log("khaali hai")
-        if(index === 0){
-          updatedOtp[index] = '';
+      if (updatedOtp[index] === '') {
+        if (index > 0) {
+          updatedOtp[index - 1] = '';
+          document.getElementById(`otp-${index - 1}`).focus();
         }
-        updatedOtp[index-1] = '';
-      }else{
-        console.log("bhara hua hai")
+      } else {
         updatedOtp[index] = '';
       }
       setOtp(updatedOtp);
-
-      // Move focus to the previous input if the current field is empty
-      if (index > 0 && !otp[index]) {
-        document.getElementById(`otp-${index - 1}`).focus();
-      }
     }
   };
 
   const handleOtpPaste = (e, index) => {
-    console.log("opt paste",index)
     e.preventDefault();
     const pastedData = e.clipboardData.getData('text').slice(0, otp.length - index).split('');
     const newOtp = [...otp];
@@ -89,13 +80,9 @@ const ForgotPassword = () => {
   };
 
   const handleVerifyOtp = async () => {
+    setLoading(true); // Set loading to true before making the API request
     try {
       const otpString = otp.join('');
-      
-      let wrongOtp = otp.filter((elem)=>elem==="")
-      if(wrongOtp.length>0){
-        return
-      }
       if (!email) {
         throw new Error('Email is not found in session storage.');
       }
@@ -103,7 +90,7 @@ const ForgotPassword = () => {
       const response = await VERIFYOTP({ email, otp: otpString });
       if (response?.data?.success) {
         setOtpVerified(true);
-        setResendTimer(20); // Reset the timer after successful OTP verification
+        setResendTimer(120);
         setError('');
       } else {
         setError(response?.data?.message || 'Verification failed');
@@ -111,52 +98,62 @@ const ForgotPassword = () => {
     } catch (error) {
       toast.error(error?.response?.data?.message || 'An error occurred');
       console.error('Error verifying OTP:', error);
+    } finally {
+      setLoading(false); // Set loading to false after the API request
     }
   };
 
   const handleResendOtp = async () => {
-    setResendTimer(20);
-    setOtp(['', '', '', '', '', '']); // Clear OTP fields
-    setOtpVerified(false); // Reset OTP verification
-    setNewPassword(''); // Clear new password
-    setConfirmPassword(''); // Clear confirm password
-    setPasswordError(''); // Clear password errors
-    const response = await FORGOTPASSWORD({ email });
-    if (response?.data?.success) {
-      toast.success('OTP has been resent');
-    } else {
+    setLoading(true); // Set loading to true before making the API request
+    setResendTimer(120);
+    setOtp(['', '', '', '', '', '']);
+    setOtpVerified(false);
+    setConfirmPassword('');
+    try {
+      const response = await FORGOTPASSWORD({ email });
+      if (response?.data?.success) {
+        toast.success('OTP has been resent');
+      } else {
+        toast.error('Failed to resend OTP');
+      }
+    } catch (error) {
       toast.error('Failed to resend OTP');
+    } finally {
+      setLoading(false); // Set loading to false after the API request
     }
   };
 
   const handleResetPassword = async () => {
     if (newPassword.length < 8) {
-      setPasswordError('Password must be at least 8 characters long');
       toast.error('Password must be at least 8 characters long');
       return;
     }
     if (newPassword !== confirmPassword) {
-      setPasswordError('Passwords do not match');
-      toast.error('Passwords do not match');
+      toast.error('Password and Confirm Password must be the same.');
       return;
     }
 
+    setLoading(true); // Set loading to true before making the API request
     try {
-      const response = await RESETPASSWORD({ password: newPassword, email }, navigate);
+      const response = await RESETPASSWORD({ newPassword: newPassword, email }, navigate);
       if (response?.data?.success) {
         toast.success(response?.data?.message);
-        sessionStorage.removeItem('forgotPasswordEmail'); // Clean up
+        sessionStorage.removeItem('forgotPasswordEmail');
       } else {
         toast.error(response?.data?.message || 'Password reset failed');
       }
     } catch (error) {
       toast.error(error?.response?.data?.message || 'An error occurred');
       console.error('Error resetting password:', error);
+    } finally {
+      setLoading(false); // Set loading to false after the API request
     }
   };
 
   return (
     <div className="flex flex-col items-center justify-start min-h-screen bg-gray-100 p-6">
+      {loading && <Loader />} {/* Show loader while loading */}
+
       {/* OTP Section */}
       <div className="w-full max-w-xl bg-white shadow-md rounded p-6 my-10">
         <h2 className="text-2xl font-bold mb-4">Enter OTP</h2>

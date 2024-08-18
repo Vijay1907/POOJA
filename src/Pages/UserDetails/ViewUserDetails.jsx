@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import Navbar from "../../components/Navbar";
 import Sidebar from "../../components/Sidebar";
-import CryptoJS from "crypto-js";
 import { useNavigate } from 'react-router-dom'; // for navigation
-import { CHANGEPASSWORD, UPDATEADMINDETAILS } from '../../service';
+import { CHANGEPASSWORD, GETPROFILE, UPDATEADMINDETAILS } from '../../service';
 import { toast } from 'react-toastify'; // Ensure you have react-toastify installed
 import { useDispatch } from 'react-redux';
 import { FaEye, FaEyeSlash } from 'react-icons/fa'; // Import the eye icons from react-icons
+import Loader from "../Loader/Loader"
 
 const ViewUserDetails = () => {
   const [userData, setUserData] = useState(null);
@@ -19,19 +19,27 @@ const ViewUserDetails = () => {
   const [errors, setErrors] = useState({});
   const [showOldPassword, setShowOldPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
+  const [dataEdited, setDataEdited] = useState(false);
+  const [loading, setLoading] = useState(false); // Loader state
   const dispatch = useDispatch();
   const navigate = useNavigate(); // hook for navigation
 
   useEffect(() => {
-    const encryptedUser = localStorage.getItem('user');
-    if (encryptedUser) {
-      const bytes = CryptoJS.AES.decrypt(encryptedUser, 'your-encryption-key');
-      const decryptedUser = JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
-      setUserData(decryptedUser);
-      setUpdatedName(decryptedUser.name);
-      setUpdatedEmail(decryptedUser.email);
-    }
-  }, []);
+    const getData = async () => {
+      setLoading(true); // Show loader
+      try {
+        let response = await GETPROFILE();
+        setUserData(response?.data?.user);
+        setUpdatedName(response?.data?.user?.name);
+        setUpdatedEmail(response?.data?.user?.email);
+      } catch (err) {
+        toast.error(err?.response?.data?.message || 'Error fetching user profile');
+      } finally {
+        setLoading(false); // Hide loader
+      }
+    };
+    getData();
+  }, [dataEdited]);
 
   const validateDetails = () => {
     const newErrors = {};
@@ -48,7 +56,7 @@ const ViewUserDetails = () => {
   const validatePassword = () => {
     const newErrors = {};
     if (newPassword.length < 8) {
-      newErrors.newPassword = 'Password must be at least 8 characters long';
+      newErrors.newPassword = 'New Password must be at least 8 characters long';
     }
     if (!oldPassword) {
       newErrors.oldPassword = 'Old password is required';
@@ -60,18 +68,18 @@ const ViewUserDetails = () => {
   const handleUpdateDetails = async () => {
     if (!validateDetails()) return;
 
+    setLoading(true); // Show loader
     try {
-      const response = await UPDATEADMINDETAILS({
+      await UPDATEADMINDETAILS({
         name: updatedName,
         email: updatedEmail
       }, dispatch);
-      // Update local storage with the new user data
-      const updatedUser = { ...userData, name: updatedName, email: updatedEmail };
-      setUserData(updatedUser);
+      setDataEdited(!dataEdited)
       setEditMode(false);
     } catch (error) {
       toast.error(error?.response?.data?.message || 'Error updating user details');
-      console.error('Error updating user details:', error);
+    } finally {
+      setLoading(false); // Hide loader
     }
   };
 
@@ -85,18 +93,16 @@ const ViewUserDetails = () => {
   const handleChangePassword = async () => {
     if (!validatePassword()) return;
 
+    setLoading(true); // Show loader
     try {
-      if(oldPassword!== newPassword){
-        toast.error("Password does not match")
-        return
-      }
-      const response = await CHANGEPASSWORD({
+      await CHANGEPASSWORD({
         oldPassword,
         newPassword
-      },navigate, dispatch);
+      }, navigate, dispatch);
     } catch (error) {
       toast.error(error?.response?.data?.message || 'Error changing password');
-      console.error('Error changing password:', error);
+    } finally {
+      setLoading(false); // Hide loader
     }
   };
 
@@ -107,12 +113,14 @@ const ViewUserDetails = () => {
     setErrors({});
   };
 
-  if (!userData) return <div>Loading...</div>;
+  if (!userData) return <Loader />
 
   return (
     <>
       <Navbar title={"User Details"} />
       <Sidebar />
+
+      {loading && <Loader />} {/* Display Loader when loading */}
 
       <div className="ml-20 mt-4">
         <h1 className="bg-purple-400 py-4 px-6 text-xl text-white font-semibold">
