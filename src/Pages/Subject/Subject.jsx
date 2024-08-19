@@ -27,6 +27,7 @@ const Books = () => {
   const [formData, setFormData] = useState({
     bookName: "",
     bookDescription: "",
+    priority: "",
     coverImage: null,
     pdfUrl: null,
   });
@@ -93,6 +94,7 @@ const Books = () => {
     setFormData({
       bookName: book.bookName,
       bookDescription: book.bookDescription,
+      priority: book.priority,
       coverImage: null,
       pdfUrl: null,
     });
@@ -129,10 +131,11 @@ const Books = () => {
     const formDataToSend = new FormData();
     if (formData.bookName !== originalBook.bookName) formDataToSend.append('bookName', formData.bookName);
     if (formData.bookDescription !== originalBook.bookDescription) formDataToSend.append('bookDescription', formData.bookDescription);
+    if (formData.priority && formData.priority !== originalBook.priority) formDataToSend.append('priority', formData.priority);
     if (formData.coverImage) formDataToSend.append('coverImage', formData.coverImage);
     if (formData.pdfUrl) formDataToSend.append('pdfUrl', formData.pdfUrl);
 
-    if (formDataToSend.has('bookName') || formDataToSend.has('bookDescription') || formDataToSend.has('coverImage') || formDataToSend.has('pdfUrl')) {
+    if (formDataToSend.has('bookName') || formDataToSend.has('bookDescription') || formDataToSend.has('priority') || formDataToSend.has('coverImage') || formDataToSend.has('pdfUrl')) {
       try {
         setIsLoading(true)
         console.log("selec", selectedBook)
@@ -224,6 +227,11 @@ const Books = () => {
                     <Description description={book.bookDescription} />
                     <Rating rating={book.rating} />
                     <div className="flex gap-x-12 items-center mt-4">
+                      {book.priority && (
+                        <div className="w-8 h-8 bg-green-500 text-white flex items-center justify-center rounded-full text-sm font-bold">
+                          {book.priority}
+                        </div>
+                      )}
                       <BsPencilSquare
                         onClick={() => handleEditClick(book)}
                         className="text-yellow-500 cursor-pointer text-2xl hover:text-yellow-600 transition duration-150"

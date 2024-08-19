@@ -152,6 +152,11 @@ const Dhyaan = () => {
                     <Description description={dhyaan.dhyanDescription} />
                     <Rating rating={dhyaan.rating} />
                     <div className="flex gap-x-12 items-center mt-4">
+                      {dhyaan.priority && (
+                        <div className="w-8 h-8 bg-green-500 text-white flex items-center justify-center rounded-full text-sm font-bold">
+                          {dhyaan.priority}
+                        </div>
+                      )}
                       <BsPencilSquare
                         onClick={() => handleEditClick(dhyaan)}
                         className="text-yellow-500 cursor-pointer text-2xl hover:text-yellow-600 transition duration-150"

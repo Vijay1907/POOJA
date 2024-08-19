@@ -185,21 +185,48 @@ export const GETUSERS = async (page, limit) => {
 
 export const FORGOTPASSWORD = async (formData) => {
 
-    const response = await privateRequest.post("/forget_password", formData, {
-    });
+    const response = await privateRequest.post("/forget_password", formData);
     return response
 }
 
 export const VERIFYOTP = async (formData) => {
-    const response = await privateRequest.post("/verify_otp", formData, {
-    });
+    const response = await privateRequest.post("/verify_otp", formData);
     return response
 }
 
 export const RESETPASSWORD = async (formData, navigate) => {
-    const response = await privateRequest.post("/reset_password", formData, {
-    });
+    const response = await privateRequest.post("/reset_password", formData);
     navigate("/login")
+    return response
+}
+
+export const SETPRIORITY = async (formData) => {
+    const jwtToken = Cookies.get('jwtToken');
+    const response = await privateRequest.post("/set_priority", formData, {
+        headers: {
+            Authorization: `Bearer ${jwtToken}`,
+        },
+    });
+    return response
+}
+
+export const REMOVEPRIORITY = async (id) => {
+    const jwtToken = Cookies.get('jwtToken');
+    const response = await privateRequest.delete(`/remove/${id}`, formData, {
+        headers: {
+            Authorization: `Bearer ${jwtToken}`,
+        },
+    });
+    return response
+}
+
+export const GETPRIORITY = async (type = "Books") => {
+    const jwtToken = Cookies.get('jwtToken');
+    const response = await privateRequest.post("/priority_books", { type }, {
+        headers: {
+            Authorization: `Bearer ${jwtToken}`,
+        },
+    });
     return response
 }
 

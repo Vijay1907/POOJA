@@ -17,6 +17,7 @@ const EditDhyaan = () => {
   const [formData, setFormData] = useState({
     dhyanName: '',
     dhyanDescription: '',
+    priority: '',
     dhyanPoster: null,
     dhyanContent: '',
   });
@@ -28,6 +29,7 @@ const EditDhyaan = () => {
       setFormData({
         dhyanName: dhyaan.dhyanName || '',
         dhyanDescription: dhyaan.dhyanDescription || '',
+        priority: dhyaan.priority || '',
         dhyanPoster: null,  // Don't pre-set the poster image here, handle it separately
         dhyanContent: dhyaan.dhyanContent || '',
       });
@@ -54,17 +56,19 @@ const EditDhyaan = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
 
     const formDataToSend = new FormData();
 
     if (formData.dhyanName !== dhyaan.dhyanName) formDataToSend.append('dhyanName', formData.dhyanName);
     if (formData.dhyanDescription !== dhyaan.dhyanDescription) formDataToSend.append('dhyanDescription', formData.dhyanDescription);
+    if (formData.priority && formData.priority !== dhyaan.priority) formDataToSend.append('priority', formData.priority);
     if (formData.dhyanPoster) formDataToSend.append('dhyanPoster', formData.dhyanPoster);
     if (formData.dhyanContent !== dhyaan.dhyanContent) formDataToSend.append('dhyanContent', formData.dhyanContent);
 
-    if (formDataToSend.has('dhyanName') || formDataToSend.has('dhyanDescription') || formDataToSend.has('dhyanPoster') || formDataToSend.has('dhyanContent')) {
+    if (formDataToSend.has('dhyanName') || formDataToSend.has('dhyanDescription') || formDataToSend.has('priority') || formDataToSend.has('dhyanPoster') || formDataToSend.has('dhyanContent')) {
       try {
+
+        setLoading(true);
         let response = await UPDATEDHYAAN(dhyaan._id, formDataToSend);
         toast.success("Dhyaan updated successfully");
         navigate('/dhyaan');
@@ -106,6 +110,22 @@ const EditDhyaan = () => {
               onChange={handleChange}
               className="w-full px-3 py-2 border rounded"
             ></textarea>
+          </div>
+
+          <div className="mb-4">
+            <label className="block text-sm font-bold mb-2">Priority</label>
+            <select
+              value={formData.priority || ""}
+              onChange={(e) => setFormData({ ...formData, priority: e.target.value })}
+              className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-0"
+            >
+              <option value="">Select Priority</option>
+              {[...Array(10)].map((_, index) => (
+                <option key={index + 1} value={index + 1}>
+                  {index + 1}
+                </option>
+              ))}
+            </select>
           </div>
           <div className="mb-4">
             <label className="block text-sm font-bold mb-2">Poster Image</label>

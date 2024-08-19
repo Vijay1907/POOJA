@@ -15,6 +15,7 @@ import AddUser from "./Pages/AddUser/AddUser.jsx";
 import PdfViewer from "./Pages/PDFViewer/PDFViewer.jsx";
 import EditDhyaan from "./Pages/Mcq/EditDhyaan.jsx";
 import ForgotPassword from "./Pages/UserDetails/ForgotPassword.jsx";
+import SetPriority from "./Pages/SetPriority/SetPriority.jsx";
 
 
 function App() {
@@ -39,6 +40,7 @@ function App() {
             </PrivateRoute>
           }
         />
+
         <Route
           path="/add-books"
           element={
@@ -71,7 +73,7 @@ function App() {
             </PrivateRoute>
           }
         />
-        
+
         <Route
           path="/users"
           element={
@@ -85,6 +87,14 @@ function App() {
           element={
             <PrivateRoute>
               <ViewUserDetails />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/priority"
+          element={
+            <PrivateRoute>
+              <SetPriority />
             </PrivateRoute>
           }
         />

@@ -14,6 +14,7 @@ const AddDhyaan = () => {
   const [dhyanDescription, setDhyanDescription] = useState(""); // Optional
   const [editorContent, setEditorContent] = useState("");
   const [loading, setLoading] = useState(false);
+  const [priority, setPriority] = useState("");
   const editorRef = useRef(null);
   const navigate = useNavigate();
 
@@ -36,6 +37,9 @@ const AddDhyaan = () => {
     formData.append("dhyanName", dhyanName);
     formData.append("dhyanDescription", dhyanDescription);
     formData.append("dhyanContent", editorContent);
+    if (priority) {
+      formData.append("priority", priority);
+    }
 
     if (image) {
       formData.append("dhyanPoster", image);
@@ -47,6 +51,7 @@ const AddDhyaan = () => {
         toast.success(response?.data?.message);
         navigate("/dhyaan");
         setDhyanName("");
+        setPriority("");
         setDhyanDescription("");
         setEditorContent("");
         setImage(null);
@@ -118,7 +123,7 @@ const AddDhyaan = () => {
 
           <div className="mb-6">
             <label className="block text-gray-700 text-lg font-semibold mb-2">
-              Dhyaan Description (Optional)
+              Dhyaan Description
             </label>
             <input
               className="shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
@@ -128,6 +133,24 @@ const AddDhyaan = () => {
               onChange={(e) => setDhyanDescription(e.target.value)}
               disabled={loading}
             />
+          </div>
+
+          <div className="mb-6">
+            <label className="block text-gray-700 text-lg font-semibold mb-2">
+              Priority (Optional)
+            </label>
+            <select
+              value={priority || ""}
+              onChange={(e) => setPriority(e.target.value)}
+              className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-0"
+            >
+              <option className='text-gray-700 leading-tight' value="">Select Priority</option>
+              {[...Array(10)].map((_, index) => (
+                <option key={index + 1} value={index + 1}>
+                  {index + 1}
+                </option>
+              ))}
+            </select>
           </div>
 
           <div className="mb-6">

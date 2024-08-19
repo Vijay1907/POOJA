@@ -24,4 +24,9 @@ export const SideBarLinks = [
         to: "/users",
         icon: <RiContactsLine className="w-6 h-6" />
     },
+    {
+        name: "Priority",
+        to: "/priority",
+        icon: <RiContactsLine className="w-6 h-6" />
+    },
 ];
