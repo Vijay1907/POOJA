@@ -3,7 +3,6 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { UPDATEDHYAAN } from '../../service';
 import JoditEditor from "jodit-react";
-import 'react-quill/dist/quill.snow.css';
 import Navbar from '../../components/Navbar';
 import Sidebar from '../../components/Sidebar';
 import { BACKEND_URL } from '../../configs/RequestMethod';

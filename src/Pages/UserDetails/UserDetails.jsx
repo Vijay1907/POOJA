@@ -5,7 +5,7 @@ import { GETUSERS } from "../../service";
 import Loader from "../Loader/Loader";
 import { toast } from "react-toastify";
 
-const UserDetails = () => {  
+const UserDetails = () => {
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [page, setPage] = useState(1);
@@ -15,7 +15,7 @@ const UserDetails = () => {
   const getAllUser = async (page = 1) => {
     try {
       setIsLoading(true);
-      const response = await GETUSERS(page, 10 ); // Adjust the parameters based on your API
+      const response = await GETUSERS(page, 10); // Adjust the parameters based on your API
       setData(response?.data?.users || []);
       setTotalPages(response?.data?.totalPages || 1);
       setPage(response?.data?.page || 1);
@@ -36,14 +36,15 @@ const UserDetails = () => {
       setIsLoading(true);
       const response = await GETUSERS();
       let data = response?.data?.users || [];
-  
+
       const formattedData = data.map(user => ({
         USER_ID: user._id,
-        NAME: user.name ? user.name : '', 
+        NAME: user.name ? user.name : '',
         EMAIL: user.email,
-        'SIGIN DATE': moment(user.created_at).format('MMMM D, YYYY') 
+        MOBILE_NO: user.phone,
+        'SIGIN DATE': moment(user.created_at).format('MMMM D, YYYY')
       }));
-  
+
       const worksheet = XLSX.utils.json_to_sheet(formattedData);
       const workbook = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(workbook, worksheet, 'User Data');
@@ -55,7 +56,7 @@ const UserDetails = () => {
       setIsLoading(false);
     }
   };
-  
+
 
   const handlePageChange = (newPage) => {
     if (newPage < 1 || newPage > totalPages) return;
@@ -104,6 +105,7 @@ const UserDetails = () => {
                   <th>S.no.</th>
                   <th>Name</th>
                   <th>Email</th>
+                  <th>Mobile No.</th>
                   <th>SignIn Date</th>
                 </tr>
               </thead>
@@ -116,8 +118,9 @@ const UserDetails = () => {
                     <td className="py-3 items-center flex justify-center">
                       {(page - 1) * 10 + index + 1}
                     </td>
-                    <td>{item?.name }</td>
-                    <td>{item?.email}</td>
+                    <td>{item?.name || "-"}</td>
+                    <td>{item?.email || "-"}</td>
+                    <td>{item?.phone || "-"}</td>
                     <td>{moment(item?.created_at).format("MMMM D, YYYY")}</td>
                   </tr>
                 ))}

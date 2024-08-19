@@ -12,6 +12,7 @@ import DeleteBook from './DeleteBook';
 import Loader from '../Loader/Loader';
 import debounce from 'lodash/debounce';
 import { BACKEND_URL } from '../../configs/RequestMethod';
+import Rating from '../../components/Rating';
 
 const Books = () => {
   const [subjectsList, setSubjectList] = useState([]);
@@ -221,7 +222,8 @@ const Books = () => {
                     {/* <hr className="border-gray-300 mb-3" /> */}
                     <h3 className="text-lg font-semibold mb-2">{book.bookName}</h3>
                     <Description description={book.bookDescription} />
-                    <div className="flex gap-x-12 items-center">
+                    <Rating rating={book.rating} />
+                    <div className="flex gap-x-12 items-center mt-4">
                       <BsPencilSquare
                         onClick={() => handleEditClick(book)}
                         className="text-yellow-500 cursor-pointer text-2xl hover:text-yellow-600 transition duration-150"

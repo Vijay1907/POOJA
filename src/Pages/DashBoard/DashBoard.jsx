@@ -7,6 +7,7 @@ import HeaderSection from "./components/HeaderSection";
 import { GETDASHBOARDDATA } from "../../service";
 import Loader from "../Loader/Loader";
 import { BACKEND_URL } from "../../configs/RequestMethod";
+import Rating from "../../components/Rating";
 
 const DashBoard = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -40,7 +41,7 @@ const DashBoard = () => {
         <div className="flex-1 p-6 mx-8 relative">
           {isLoading && <Loader />}  {/* Display Loader when loading */}
           <HeaderSection data={data} />
-          
+
           <div className="mt-12">
             {/* Top Viewed Books Section */}
             <div className="bg-white shadow-lg rounded-lg overflow-hidden mb-8">
@@ -64,7 +65,8 @@ const DashBoard = () => {
                           className="max-w-full max-h-full object-contain"
                         />
                       </div>
-                      <div className="p-4 pb-0 text-center bg-white">
+                      <div className="p-4 pb-0 flex flex-col justify-center items-center bg-white">
+                        <Rating rating={book.rating} />
                         <h3 className="text-lg font-semibold text-gray-800 mb-2">
                           {book.bookName}
                         </h3>
@@ -98,12 +100,13 @@ const DashBoard = () => {
                     >
                       <div className="flex justify-center items-center h-48">
                         <img
-                          src={BACKEND_URL+"/"+dhyaan.dhyanPoster}
+                          src={BACKEND_URL + "/" + dhyaan.dhyanPoster}
                           alt={dhyaan.dhyanName}
                           className="max-w-full max-h-full object-contain"
                         />
                       </div>
-                      <div className="p-4 pb-0 text-center bg-white">
+                      <div className="p-4 pb-0 flex flex-col justify-center items-center bg-white">
+                        <Rating rating={dhyaan.rating} />
                         <h3 className="text-lg font-semibold text-gray-800 mb-2">
                           {dhyaan.dhyanName}
                         </h3>

@@ -10,6 +10,7 @@ import Description from '../../components/Description';
 import { BACKEND_URL } from '../../configs/RequestMethod';
 import debounce from 'lodash/debounce';
 import Loader from '../Loader/Loader'
+import Rating from '../../components/Rating';
 
 const Dhyaan = () => {
   const [dhyaanList, setDhyaanList] = useState([]);
@@ -149,7 +150,8 @@ const Dhyaan = () => {
                   <div className="p-4 pb-2">
                     <h3 className="text-lg font-semibold mb-2">{dhyaan.dhyanName}</h3>
                     <Description description={dhyaan.dhyanDescription} />
-                    <div className="flex gap-x-12 items-center">
+                    <Rating rating={dhyaan.rating} />
+                    <div className="flex gap-x-12 items-center mt-4">
                       <BsPencilSquare
                         onClick={() => handleEditClick(dhyaan)}
                         className="text-yellow-500 cursor-pointer text-2xl hover:text-yellow-600 transition duration-150"
