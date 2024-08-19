@@ -161,10 +161,9 @@ const AddDhyaan = () => {
               className="mb-4 border border-gray-300 rounded p-2"
             />
             {image && (
-              <div className="mt-2 flex justify-center">
-                <p className="text-gray-700 text-sm mb-2">Image Preview:</p>
+              <div className="mt-2">
                 <img
-                  className="max-h-60 object-contain border border-gray-300 rounded"
+                  className="max-h-40 object-contain border border-gray-300 rounded"
                   src={URL.createObjectURL(image)}
                   alt="Uploaded Preview"
                 />

@@ -1,6 +1,7 @@
-import { MdDashboard, MdOutlineCategory } from "react-icons/md";
+import { MdDashboard } from "react-icons/md";
 import { RiContactsLine } from "react-icons/ri";
 import { BsBook } from "react-icons/bs";
+import { FaPrayingHands } from "react-icons/fa";
 
 export const SideBarLinks = [
     {
@@ -11,12 +12,12 @@ export const SideBarLinks = [
     {
         name: "Books",
         to: "/books",
-        icon: <MdOutlineCategory className="w-6 h-6" />
+        icon: <BsBook className="w-6 h-6" />
     },
     {
         name: "Dhyaan",
         to: "/dhyaan",
-        icon: <BsBook className="w-6 h-6" />
+        icon: <FaPrayingHands className="w-6 h-6" />
     },
     {
         name: "Users",

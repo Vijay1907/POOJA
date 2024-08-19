@@ -75,7 +75,7 @@ const Books = () => {
     } catch (error) {
       console.log(error);
       toast.error("Failed to delete book");
-    }finally {
+    } finally {
       setIsLoading(false);
     }
   };
@@ -133,8 +133,8 @@ const Books = () => {
 
     if (formDataToSend.has('bookName') || formDataToSend.has('bookDescription') || formDataToSend.has('coverImage') || formDataToSend.has('pdfUrl')) {
       try {
-    setIsLoading(true)
-        console.log("selec",selectedBook)
+        setIsLoading(true)
+        console.log("selec", selectedBook)
         let response = await UPDATEBOOK(selectedBook._id, formDataToSend);
         setIsEditModalOpen(false);
         toast.success(response?.data?.message || "Book updated successfully");
@@ -168,7 +168,7 @@ const Books = () => {
     debounce((nextValue) => {
       if (nextValue.length >= 3) {
         getAllSubjects(1, nextValue);
-      }else if(!nextValue){
+      } else if (!nextValue) {
         getAllSubjects(1, nextValue);
       }
     }, 300),
@@ -195,7 +195,7 @@ const Books = () => {
             placeholder="Search books..."
             value={searchTerm}
             onChange={handleSearchChange}
-            className="w-1/3 px-4 py-2 border-2 rounded-lg ml-[100px] focus:outline-none focus:ring-2 focus:border-transparent transition duration-200"
+            className="w-1/3 px-4 py-2 border-2 rounded-lg ml-8 focus:outline-none focus:ring-2 focus:border-transparent transition duration-200"
           />
           <Link to='/add-books'>
             <button className="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded">

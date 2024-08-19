@@ -25,7 +25,7 @@ const Dhyaan = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    getAllDhyaan('',1);
+    getAllDhyaan('', 1);
   }, [shoudlApiHit]);
 
   useEffect(() => {
@@ -36,10 +36,10 @@ const Dhyaan = () => {
     }
   }, [isDeleteModalOpen]);
 
-  const getAllDhyaan = async ( search = "",page = 1) => {
+  const getAllDhyaan = async (search = "", page = 1) => {
     try {
       setIsLoading(true);
-      const response = await GETDHYAAN(search, page,10);
+      const response = await GETDHYAAN(search, page, 10);
       setDhyaanList((prevDhyaan) => (page === 1 ? response?.data?.dhyaans : [...prevDhyaan, ...response?.data?.dhyaans]));
       setTotalPages(response?.data?.pagination?.total_pages || 1);
       setPage(response?.data?.pagination?.current_page || 1);
@@ -55,7 +55,7 @@ const Dhyaan = () => {
     try {
       setIsLoading(true);
       let response = await DELETEDHYAAN(id);
-      getAllDhyaan( searchTerm,page);
+      getAllDhyaan(searchTerm, page);
       setIsDeleteModalOpen(false);
       setShoudlApiHit(!shoudlApiHit)
       toast.success(response?.data?.message);
@@ -84,24 +84,24 @@ const Dhyaan = () => {
   const handleScroll = () => {
     if (window.innerHeight + document.documentElement.scrollTop >= document.documentElement.scrollHeight - 10) {
       if (page < totalPages) {
-        getAllDhyaan( searchTerm,page + 1,);
+        getAllDhyaan(searchTerm, page + 1,);
       }
     }
   };
 
   const handleSearchChange = (e) => {
-    console.log("each tem handle chagne",e.target.value)
+    console.log("each tem handle chagne", e.target.value)
     setSearchTerm(e.target.value);
   };
 
 
   const debouncedSearch = useCallback(
     debounce((nextValue) => {
-      console.log("check next value",nextValue)
+      console.log("check next value", nextValue)
       if (nextValue.length >= 3) {
-        getAllDhyaan( nextValue,1);
-      }else if(!nextValue){
-        getAllDhyaan( nextValue,1);
+        getAllDhyaan(nextValue, 1);
+      } else if (!nextValue) {
+        getAllDhyaan(nextValue, 1);
       }
     }, 300),
     []
@@ -128,7 +128,7 @@ const Dhyaan = () => {
             placeholder="Search dhyaans..."
             value={searchTerm}
             onChange={handleSearchChange}
-            className="w-1/3 px-4 py-2 border-2 rounded-lg ml-[100px] focus:outline-none focus:ring-2 focus:border-transparent transition duration-200"
+            className="w-1/3 px-4 py-2 border-2 rounded-lg ml-8 focus:outline-none focus:ring-2 focus:border-transparent transition duration-200"
           />
           <Link to='/add-dhyaan'>
             <button className="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded">

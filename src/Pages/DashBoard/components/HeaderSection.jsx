@@ -1,4 +1,4 @@
-import { FaUsers, FaBrain } from "react-icons/fa";
+import { FaUsers, FaBrain, FaPrayingHands } from "react-icons/fa";
 import { BsFillBookFill } from "react-icons/bs";
 
 const HeaderSection = ({ data }) => {
@@ -20,7 +20,7 @@ const HeaderSection = ({ data }) => {
       />
       <HeaderCard
         colors="#536df0"
-        icon={<FaBrain />}
+        icon={<FaPrayingHands />}
         current="Total Dhyaan"
         title="Total Dhyaan"
         no={data.dhyaanCount}
