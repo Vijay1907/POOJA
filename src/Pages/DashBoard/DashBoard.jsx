@@ -67,7 +67,7 @@ const DashBoard = () => {
                       </div>
                       <div className="p-4 pb-0 flex flex-col justify-center items-center bg-white">
                         <Rating rating={book.rating} />
-                        <h3 className="text-lg font-semibold text-gray-800 mb-2">
+                        <h3 className="text-lg font-semibold text-gray-800 mb-2 mt-1">
                           {book.bookName}
                         </h3>
                         {/* <p className="text-gray-600 text-sm line-clamp-3">
@@ -107,7 +107,7 @@ const DashBoard = () => {
                       </div>
                       <div className="p-4 pb-0 flex flex-col justify-center items-center bg-white">
                         <Rating rating={dhyaan.rating} />
-                        <h3 className="text-lg font-semibold text-gray-800 mb-2">
+                        <h3 className="text-lg font-semibold text-gray-800 mb-2 mt-1">
                           {dhyaan.dhyanName}
                         </h3>
                         {/* <p className="text-gray-600 text-sm line-clamp-3">

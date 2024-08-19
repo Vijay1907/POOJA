@@ -8,7 +8,7 @@ const Description = ({ description, maxLength = 50 }) => {
   };
 
   return (
-    <p className="text-gray-600 text-sm mb-4">
+    <p className="text-gray-600 text-sm mb-3">
       {isExpanded ? description : `${description.slice(0, maxLength)}${description.length > maxLength ? '...' : ''}`}
       {description.length > maxLength && (
         <button
