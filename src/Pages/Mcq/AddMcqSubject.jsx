@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import Navbar from '../../components/Navbar';
 import Sidebar from '../../components/Sidebar';
 import { toast } from 'react-toastify';
@@ -7,6 +7,7 @@ import 'react-quill/dist/quill.snow.css';
 import ReactQuill from 'react-quill';
 import { ADDDHYAAN } from '../../service';
 import { useNavigate } from 'react-router-dom';
+import Loader from '../Loader/Loader'; // Import your Loader component
 
 const AddDhyaan = () => {
   const [image, setImage] = useState(null);
@@ -14,6 +15,7 @@ const AddDhyaan = () => {
   const [dhyanDescription, setDhyaanDescription] = useState(""); // Optional
   const [editorContent, setEditorContent] = useState("");
   const [editorHeight, setEditorHeight] = useState('auto'); // To store the height of the editor
+  const [loading, setLoading] = useState(false); // State to manage loading status
 
   const editorRef = useRef(null); // Ref for accessing the editor
   const navigate = useNavigate();
@@ -38,6 +40,7 @@ const AddDhyaan = () => {
   };
 
   const submitData = async () => {
+    setLoading(true); // Show loader when submission starts
     const formData = new FormData();
     formData.append("dhyanName", dhyanName);
     formData.append("dhyanDescription", dhyanDescription);
@@ -52,7 +55,7 @@ const AddDhyaan = () => {
       let response = await ADDDHYAAN(formData);
       if (response?.data?.success) {
         toast.success(response?.data?.message);
-        navigate("/dhyaan")
+        navigate("/dhyaan");
         // Clear form fields after submission
         setdhyanName("");
         setDhyaanDescription("");
@@ -65,6 +68,8 @@ const AddDhyaan = () => {
     } catch (error) {
       console.error("Error adding dhyaan:", error);
       toast.error('Error adding dhyaan.');
+    } finally {
+      setLoading(false); // Hide loader after submission
     }
   };
 
@@ -89,13 +94,15 @@ const AddDhyaan = () => {
   };
 
   const handleCancelClick = () => {
-    navigate("/dhyaan")
-  }
+    navigate("/dhyaan");
+  };
 
   return (
     <div>
       <Navbar title={"Add Dhyaan"} />
       <Sidebar />
+
+      {loading && <Loader />} {/* Show the loader when loading */}
 
       <div
         className="w-full max-w-4xl m-auto my-8 p-6 bg-white rounded-lg"
@@ -104,6 +111,7 @@ const AddDhyaan = () => {
         }}
       >
         <form onSubmit={handleSubmit}>
+          {/* Form Fields */}
           <div className="mb-6">
             <label className="block text-gray-700 text-lg font-semibold mb-2">
               Dhyaan Name
@@ -114,6 +122,7 @@ const AddDhyaan = () => {
               placeholder="Dhyaan Name"
               value={dhyanName}
               onChange={(e) => setdhyanName(e.target.value)}
+              disabled={loading} // Disable while loading
             />
             {errors.dhyanName && (
               <p className="text-red-500 text-sm mt-2 ml-1">{errors.dhyanName}</p>
@@ -130,6 +139,7 @@ const AddDhyaan = () => {
               placeholder="Dhyaan Description"
               value={dhyanDescription}
               onChange={(e) => setDhyaanDescription(e.target.value)}
+              disabled={loading} // Disable while loading
             />
           </div>
 
@@ -144,6 +154,7 @@ const AddDhyaan = () => {
               ref={editorRef} // Attach the ref here
               className="bg-white"
               style={{ minHeight: editorHeight }} // Dynamically adjust the height
+              readOnly={loading} // Disable editor while loading
             />
             {errors.editorContent && (
               <p className="text-red-500 text-sm mt-2">{errors.editorContent}</p>
@@ -159,6 +170,7 @@ const AddDhyaan = () => {
               accept="image/*"
               onChange={handleImageChange}
               className="mb-4 border border-gray-300 rounded p-2"
+              disabled={loading} // Disable while loading
             />
             {image && (
               <div className="mt-2">
@@ -176,12 +188,14 @@ const AddDhyaan = () => {
               <button
                 onClick={handleCancelClick}
                 className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mr-3"
+                disabled={loading} // Disable while loading
               >
                 Cancel
               </button>
               <button
                 className="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
                 type="submit"
+                disabled={loading} // Disable while loading
               >
                 Add Dhyaan
               </button>
