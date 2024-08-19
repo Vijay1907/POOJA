@@ -2,11 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { UPDATEDHYAAN } from '../../service';
-import ReactQuill from 'react-quill';
+import JoditEditor from "jodit-react";
 import 'react-quill/dist/quill.snow.css';
 import Navbar from '../../components/Navbar';
 import Sidebar from '../../components/Sidebar';
 import { BACKEND_URL } from '../../configs/RequestMethod';
+import Loader from '../Loader/Loader';
+
 
 const EditDhyaan = () => {
   const location = useLocation();
@@ -19,7 +21,7 @@ const EditDhyaan = () => {
     dhyanPoster: null,
     dhyanContent: '',
   });
-
+  const [loading, setLoading] = useState(false);
   const [previewImage, setPreviewImage] = useState(null);
 
   useEffect(() => {
@@ -53,6 +55,7 @@ const EditDhyaan = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
 
     const formDataToSend = new FormData();
 
@@ -69,6 +72,8 @@ const EditDhyaan = () => {
       } catch (error) {
         console.log(error);
         toast.error(error.response?.data?.message || "Failed to update Dhyaan");
+      } finally {
+        setLoading(false);
       }
     } else {
       toast.info("No changes detected");
@@ -81,6 +86,7 @@ const EditDhyaan = () => {
     <div>
       <Navbar title="Edit Dhyaan" />
       <Sidebar />
+      {loading && <Loader />}
       <div className="p-6 mx-[200px]">
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
@@ -116,11 +122,32 @@ const EditDhyaan = () => {
           </div>
           <div className="mb-4">
             <label className="block text-sm font-bold mb-2">Dhyaan Content</label>
-            <ReactQuill
+            <JoditEditor
+              // ref={editorRef}
+              value={formData.dhyanContent}
+              onChange={handleContentChange}
+
+              // config={{
+              //   uploader: {
+              //     url: '/upload-image',
+              //     insertImageAsBase64URI: false,
+              //     format: 'json',
+              //   },
+              //   buttons: [
+              //     'bold', 'italic', 'underline', 'strikethrough',
+              //     'ul', 'ol', 'outdent', 'indent',
+              //     'align', 'undo', 'redo', 'hr', 'link', 'image',
+              //     'source'
+              //   ],
+              // }}
+              className="bg-white"
+              readOnly={loading}
+            />
+            {/* // <ReactQuill
               value={formData.dhyanContent}
               onChange={handleContentChange}
               className="border rounded" // Adjust to make the editor's height increase with content
-            />
+            /> */}
           </div>
           <div className="flex justify-end">
             <button
