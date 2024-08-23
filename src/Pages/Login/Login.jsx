@@ -1,5 +1,3 @@
-// src/components/Login/Login.jsx
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
@@ -7,6 +5,7 @@ import { toast } from 'react-toastify';
 import { FORGOTPASSWORD, USERLOGIN } from '../../service';
 import { loginPageImg } from '../../service';
 import Loader from '../Loader/Loader';
+import { AiFillEye, AiFillEyeInvisible } from 'react-icons/ai'; // Import eye icons
 
 const Login = () => {
   const navigate = useNavigate();
@@ -21,6 +20,7 @@ const Login = () => {
     password: '',
   });
   const [loading, setLoading] = useState(false); // Loader state
+  const [showPassword, setShowPassword] = useState(false); // State to toggle password visibility
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -115,21 +115,35 @@ const Login = () => {
             />
             {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
           </div>
-          <div className="mb-6">
+          <div className="mb-6 relative">
             <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="password">
               Password
             </label>
-            <input
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              type="password"
-              id="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              required
-            />
-            {errors.password && <p className="text-red-500 text-sm">{errors.password}</p>}
+            <div className='relative'>
+              <input
+                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline pr-10"
+                type={showPassword ? 'text' : 'password'} // Toggle between text and password type
+                id="password"
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                required
+              />
+              <div
+                className="absolute right-2 top-1/2 transform -translate-y-1/2 cursor-pointer"
+                onClick={() => setShowPassword(!showPassword)} // Toggle showPassword state
+              >
+                {showPassword ? (
+                  <AiFillEyeInvisible className="text-gray-500" size={20} />
+                ) : (
+                  <AiFillEye className="text-gray-500" size={20} />
+                )}
+                {errors.password && <p className="text-red-500 text-sm">{errors.password}</p>}
+              </div>
+            </div>
           </div>
+
+
           <div className="flex items-center justify-between mb-4">
             <button
               className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
