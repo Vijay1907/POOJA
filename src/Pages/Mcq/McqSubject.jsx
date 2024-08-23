@@ -40,7 +40,7 @@ const Dhyaan = () => {
   const getAllDhyaan = async (search = "", page = 1) => {
     try {
       setIsLoading(true);
-      const response = await GETDHYAAN(search, page, 10);
+      const response = await GETDHYAAN(search, page, 12);
       setDhyaanList((prevDhyaan) => (page === 1 ? response?.data?.dhyaans : [...prevDhyaan, ...response?.data?.dhyaans]));
       setTotalPages(response?.data?.pagination?.total_pages || 1);
       setPage(response?.data?.pagination?.current_page || 1);
@@ -76,6 +76,7 @@ const Dhyaan = () => {
     setSelectedDhyaan(dhyaan);
     setIsDeleteModalOpen(true);
   };
+
 
   const handleDeleteConfirm = (id) => {
     deleteDhyaan(id);
@@ -149,7 +150,7 @@ const Dhyaan = () => {
                   </div>
                   <div className="p-4 pb-2">
                     <h3 className="text-lg font-semibold mb-2">{dhyaan.dhyanName}</h3>
-                    <Description description={dhyaan.dhyanDescription} />
+                    {/* <Description description={dhyaan.dhyanDescription} /> */}
                     <Rating rating={dhyaan.rating} />
                     <div className="flex gap-x-12 items-center mt-4">
                       {dhyaan.priority && (

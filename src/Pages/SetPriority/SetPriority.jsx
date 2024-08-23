@@ -1,14 +1,11 @@
-import React, { useEffect, useState, useCallback } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { BsPencilSquare, BsFillTrashFill } from "react-icons/bs";
-import { AiFillEye } from "react-icons/ai";
+import React, { useEffect, useState } from 'react';
+import { BsFillTrashFill, BsPencilSquare } from "react-icons/bs";
+import { AiOutlineClose } from "react-icons/ai";
 import Navbar from '../../components/Navbar';
 import Sidebar from '../../components/Sidebar';
 import { toast } from 'react-toastify';
-import { GETPRIORITY, SETPRIORITY, REMOVEPRIORITY } from '../../service';
+import { GETPRIORITY, REMOVEPRIORITY, UPDATEBOOK, UPDATEDHYAAN } from '../../service';
 import Description from '../../components/Description';
-import EditBook from '../Subject/EditBook';
-import DeleteBook from '../Subject/DeleteBook';
 import Loader from '../Loader/Loader';
 import { BACKEND_URL } from '../../configs/RequestMethod';
 import Rating from '../../components/Rating';
@@ -20,23 +17,22 @@ const SetPriority = () => {
     const [selectedType, setSelectedType] = useState("Books");
     const [selectedItem, setSelectedItem] = useState(null);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [isRemoveConfirmOpen, setIsRemoveConfirmOpen] = useState(false);
     const [priorityPopupOpen, setPriorityPopupOpen] = useState(false);
     const [priorityValue, setPriorityValue] = useState("");
-    const [shoudlApiHit, setShoudlApiHit] = useState(false);
-    const navigate = useNavigate();
+    const [shouldApiHit, setShouldApiHit] = useState(false);
 
     useEffect(() => {
         fetchPriorityItems();
-    }, [selectedType, shoudlApiHit]);
+    }, [selectedType, shouldApiHit]);
 
     useEffect(() => {
-        if (isEditModalOpen || isDeleteModalOpen || priorityPopupOpen) {
+        if (isEditModalOpen || priorityPopupOpen || isRemoveConfirmOpen) {
             document.body.style.overflow = 'hidden';
         } else {
             document.body.style.overflow = 'auto';
         }
-    }, [isEditModalOpen, isDeleteModalOpen, priorityPopupOpen]);
+    }, [isEditModalOpen, priorityPopupOpen, isRemoveConfirmOpen]);
 
     const fetchPriorityItems = async () => {
         try {
@@ -74,28 +70,41 @@ const SetPriority = () => {
         try {
             setIsLoading(true);
             const formData = { priority: priorityValue };
-            await SETPRIORITY(formData);
+            let response
+            if (selectedType === "Books") {
+                response = await UPDATEBOOK(selectedItem._id, formData);
+            } else if (selectedType === "Dhyaan") {
+                response = await UPDATEDHYAAN(selectedItem._id, formData);
+            } else {
+                toast.error("Invalid type selected.")
+            }
+
             setPriorityPopupOpen(false);
-            setShoudlApiHit(!shoudlApiHit);
-            toast.success("Priority updated successfully");
+            setShouldApiHit(!shouldApiHit);
+            toast.success(response?.data?.message);
         } catch (error) {
             console.log(error);
-            toast.error("Failed to update priority");
+            toast.error(error?.response?.data?.message);
         } finally {
             setIsLoading(false);
         }
     };
 
+    const openRemoveConfirm = (item) => {
+        setSelectedItem(item);
+        setIsRemoveConfirmOpen(true);
+    };
+
     const handleRemovePriority = async () => {
         try {
             setIsLoading(true);
-            await REMOVEPRIORITY(selectedItem._id);
-            setPriorityPopupOpen(false);
-            setShoudlApiHit(!shoudlApiHit);
-            toast.success("Priority removed successfully");
+            let response = await REMOVEPRIORITY(selectedItem._id, { type: selectedType });
+            setIsRemoveConfirmOpen(false);
+            setShouldApiHit(!shouldApiHit);
+            toast.success(response?.data?.message);
         } catch (error) {
             console.log(error);
-            toast.error("Failed to remove priority");
+            toast.error(error?.response?.data?.message);
         } finally {
             setIsLoading(false);
         }
@@ -103,7 +112,7 @@ const SetPriority = () => {
 
     return (
         <div>
-            <Navbar title="Set Priority" />
+            <Navbar title="Priority" />
             <Sidebar />
             <div className="p-6 ml-10">
                 <div className="flex justify-between mb-4">
@@ -129,21 +138,22 @@ const SetPriority = () => {
                                         <div className='flex items-center justify-center mx-2 px-3'>
                                             <img src={`${BACKEND_URL}/${book.coverImage}`} alt={book.bookName} className="h-[180px] object-contain mt-3" />
                                         </div>
-                                        <div className="p-4 pb-2">
+                                        <div className="p-4 pb-2 flex flex-col justify-center items-center">
                                             <h3 className="text-lg font-semibold mb-2">{book.bookName}</h3>
-                                            <Description description={book.bookDescription} />
+                                            {/* <Description description={book.bookDescription} /> */}
                                             <Rating rating={book.rating} />
                                             <div className="flex gap-x-12 items-center mt-4">
+                                                {book.priority && (
+                                                    <div className="w-8 h-8 bg-green-500 text-white flex items-center justify-center rounded-full text-sm font-bold">
+                                                        {book.priority}
+                                                    </div>
+                                                )}
                                                 <BsPencilSquare
                                                     onClick={() => openPriorityPopup(book)}
                                                     className="text-yellow-500 cursor-pointer text-2xl hover:text-yellow-600 transition duration-150"
                                                 />
-                                                <AiFillEye
-                                                    onClick={() => navigate('/view-pdf', { state: { pdfUrl: book.pdfUrl } })}
-                                                    className="text-blue-500 cursor-pointer text-2xl hover:text-blue-600 transition duration-150"
-                                                />
                                                 <BsFillTrashFill
-                                                    onClick={() => setIsDeleteModalOpen(true)}
+                                                    onClick={() => openRemoveConfirm(book)}
                                                     className="text-red-500 cursor-pointer text-2xl hover:text-red-600 transition duration-150"
                                                 />
                                             </div>
@@ -160,9 +170,9 @@ const SetPriority = () => {
                                         <div className='flex items-center justify-center mx-2 px-3'>
                                             <img src={`${BACKEND_URL}/${dhyaan.dhyanPoster}`} alt={dhyaan.dhyanName} className="h-[180px] object-contain mt-3" />
                                         </div>
-                                        <div className="p-4 pb-2">
+                                        <div className="p-4 pb-2 flex flex-col justify-center items-center">
                                             <h3 className="text-lg font-semibold mb-2">{dhyaan.dhyanName}</h3>
-                                            <Description description={dhyaan.dhyanDescription} />
+                                            {/* <Description description={dhyaan.dhyanDescription} /> */}
                                             <Rating rating={dhyaan.rating} />
                                             <div className="flex gap-x-12 items-center mt-4">
                                                 {dhyaan.priority && (
@@ -175,7 +185,7 @@ const SetPriority = () => {
                                                     className="text-yellow-500 cursor-pointer text-2xl hover:text-yellow-600 transition duration-150"
                                                 />
                                                 <BsFillTrashFill
-                                                    onClick={() => setIsDeleteModalOpen(true)}
+                                                    onClick={() => openRemoveConfirm(dhyaan)}
                                                     className="text-red-500 cursor-pointer text-2xl hover:text-red-600 transition duration-150"
                                                 />
                                             </div>
@@ -191,7 +201,11 @@ const SetPriority = () => {
             {/* Priority Popup */}
             {priorityPopupOpen && (
                 <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center z-50">
-                    <div className="bg-white p-6 rounded-lg shadow-lg w-80">
+                    <div className="bg-white p-6 rounded-lg shadow-lg w-[40%] relative">
+                        <AiOutlineClose
+                            onClick={() => setPriorityPopupOpen(false)}
+                            className="absolute top-2 right-2 text-gray-500 cursor-pointer hover:text-gray-700 transition duration-150"
+                        />
                         <h2 className="text-lg font-bold mb-4">Change Priority</h2>
                         <select
                             value={priorityValue}
@@ -204,26 +218,41 @@ const SetPriority = () => {
                                 </option>
                             ))}
                         </select>
-                        <div className="flex justify-between">
+                        <div className='flex justify-end'>
                             <button
                                 onClick={handlePrioritySubmit}
-                                className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+                                className="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded"
                             >
                                 Change Priority
-                            </button>
-                            <button
-                                onClick={handleRemovePriority}
-                                className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-                            >
-                                Remove Priority
                             </button>
                         </div>
                     </div>
                 </div>
             )}
 
-            {isEditModalOpen && <EditBook onClose={() => setIsEditModalOpen(false)} />}
-            {isDeleteModalOpen && <DeleteBook onClose={() => setIsDeleteModalOpen(false)} />}
+            {/* Remove Priority Confirmation */}
+            {isRemoveConfirmOpen && (
+                <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center z-50">
+                    <div className="bg-white p-6 rounded-lg shadow-lg w-[40%] relative">
+                        <h2 className="text-lg font-bold mb-4">Removal from Priority</h2>
+                        <p>Are you sure you want to remove this {selectedType === "Books" ? "book" : "dhyaan"} from the priority list?</p>
+                        <div className="flex justify-between mt-4">
+                            <button
+                                onClick={() => setIsRemoveConfirmOpen(false)}
+                                className="bg-gray-400 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={handleRemovePriority}
+                                className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+                            >
+                                Remove
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

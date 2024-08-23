@@ -52,7 +52,7 @@ const Books = () => {
   const getAllSubjects = async (page = 1, search = "") => {
     try {
       setIsLoading(true);
-      const response = await GETBOOKS(search, page, 10);
+      const response = await GETBOOKS(search, page, 12);
       const books = response?.data?.books || [];
       setSubjectList((prevBooks) => (page === 1 ? books : [...prevBooks, ...books]));
       setTotalPages(response?.data?.pagination?.total_pages || 1);
@@ -224,7 +224,7 @@ const Books = () => {
                   <div className="p-4 pb-2">
                     {/* <hr className="border-gray-300 mb-3" /> */}
                     <h3 className="text-lg font-semibold mb-2">{book.bookName}</h3>
-                    <Description description={book.bookDescription} />
+                    {/* <Description description={book.bookDescription} /> */}
                     <Rating rating={book.rating} />
                     <div className="flex gap-x-12 items-center mt-4">
                       {book.priority && (

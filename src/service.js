@@ -85,7 +85,7 @@ export const ADDBOOK = async (formData) => {
     return response
 }
 
-export const GETBOOKS = async (searchTerm = "", page = 1, limit = 10) => {
+export const GETBOOKS = async (searchTerm = "", page = 1, limit = 12) => {
     const jwtToken = Cookies.get('jwtToken');
     const response = await privateRequest.get(`/all_books`, {
         headers: {
@@ -133,7 +133,7 @@ export const ADDDHYAAN = async (formData) => {
     return response
 }
 
-export const GETDHYAAN = async (searchTerm = "", page = 1, limit = 10) => {
+export const GETDHYAAN = async (searchTerm = "", page = 1, limit = 12) => {
     const jwtToken = Cookies.get('jwtToken');
     const response = await privateRequest.get("/all_dhyaans", {
         headers: {
@@ -200,19 +200,19 @@ export const RESETPASSWORD = async (formData, navigate) => {
     return response
 }
 
-export const SETPRIORITY = async (formData) => {
-    const jwtToken = Cookies.get('jwtToken');
-    const response = await privateRequest.post("/set_priority", formData, {
-        headers: {
-            Authorization: `Bearer ${jwtToken}`,
-        },
-    });
-    return response
-}
+// export const SETPRIORITY = async (formData) => {
+//     const jwtToken = Cookies.get('jwtToken');
+//     const response = await privateRequest.post("/set_priority", formData, {
+//         headers: {
+//             Authorization: `Bearer ${jwtToken}`,
+//         },
+//     });
+//     return response
+// }
 
-export const REMOVEPRIORITY = async (id) => {
+export const REMOVEPRIORITY = async (id, formData) => {
     const jwtToken = Cookies.get('jwtToken');
-    const response = await privateRequest.delete(`/remove/${id}`, formData, {
+    const response = await privateRequest.put(`/set_priority_null/${id}`, formData, {
         headers: {
             Authorization: `Bearer ${jwtToken}`,
         },

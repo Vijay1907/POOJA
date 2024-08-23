@@ -80,7 +80,7 @@ const UserDetails = () => {
   };
 
   return (
-    <div className="pl-8 pt-4 mt-4 pr-4">
+    <div className="pl-8 py-4 mt-4 pr-4">
       <div className="px-4 flex justify-between bg-gray-100 items-center">
         <div className="flex justify-around bg-gray-100 py-4 space-x-4 px-4">
           <h2 className="text-2xl text-slate-500">Users</h2>

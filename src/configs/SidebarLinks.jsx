@@ -1,5 +1,5 @@
 import { MdDashboard } from "react-icons/md";
-import { RiContactsLine } from "react-icons/ri";
+import { RiAlarmWarningLine, RiContactsLine } from "react-icons/ri";
 import { BsBook } from "react-icons/bs";
 import { FaPrayingHands } from "react-icons/fa";
 
@@ -27,6 +27,6 @@ export const SideBarLinks = [
     {
         name: "Priority",
         to: "/priority",
-        icon: <RiContactsLine className="w-6 h-6" />
+        icon: <RiAlarmWarningLine className="w-6 h-6" />
     },
 ];
