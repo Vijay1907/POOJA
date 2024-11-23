@@ -95,7 +95,7 @@ const Login = () => {
     <div className="flex h-screen bg-gray-100">
       {loading && <Loader />}  {/* Display Loader when loading */}
       <div className="w-1/2 bg-white flex items-center justify-center">
-        <img src={loginPageImg} alt="Login" className="max-h-[100vh]" />
+        <img src={loginPageImg} alt="Login" className="max-h-[60vh]" />
       </div>
       <div className="lg:w-1/2 flex items-center justify-center">
         <div className="w-full max-w-md p-8">
