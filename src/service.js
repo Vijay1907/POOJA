@@ -9,7 +9,8 @@ const pdfUrl = "https://www.hindutemplealbany.org/wp-content/uploads/2016/08/Sri
 const dhyaanPoster = "https://cdn.exoticindia.com/images/products/original/books/gpa229.jpg"
 const coverImage = "https://m.media-amazon.com/images/I/715smRhK8JL._AC_UF1000,1000_QL80_.jpg"
 
-export const brandImg = "https://w7.pngwing.com/pngs/898/783/png-transparent-om-namaste-hinduism-symbol-yoga-hindu-gods-text-trademark-logo.png"
+// export const brandImg = "https://w7.pngwing.com/pngs/898/783/png-transparent-om-namaste-hinduism-symbol-yoga-hindu-gods-text-trademark-logo.png"
+export const brandImg = "/images/logo.jpeg"
 
 
 export const USERLOGIN = async (formData, navigate, dispatch) => {
