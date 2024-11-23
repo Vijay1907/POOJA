@@ -4,7 +4,8 @@ import Cookies from 'js-cookie';
 import { changeUserData, login, logout } from "./features/auth-slice";
 
 
-export const loginPageImg = "https://pngfre.com/wp-content/uploads/hanuman-36-281x300.png"
+// export const loginPageImg = "https://pngfre.com/wp-content/uploads/hanuman-36-281x300.png"
+export const loginPageImg = "/images/brandName.jpeg"
 const pdfUrl = "https://www.hindutemplealbany.org/wp-content/uploads/2016/08/Sri_Hanuman_Chalisa_Hindi.pdf"
 const dhyaanPoster = "https://cdn.exoticindia.com/images/products/original/books/gpa229.jpg"
 const coverImage = "https://m.media-amazon.com/images/I/715smRhK8JL._AC_UF1000,1000_QL80_.jpg"
