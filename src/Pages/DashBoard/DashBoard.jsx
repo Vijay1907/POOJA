@@ -56,13 +56,13 @@ const DashBoard = () => {
                   {popularBookList?.map((book, index) => (
                     <div
                       key={index}
-                      className="min-w-[250px] border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-lg transition-shadow duration-300 hover:transform hover:scale-105 bg-white p-5"
+                      className="min-w-[210px] border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-lg transition-shadow duration-300 hover:transform hover:scale-105 bg-white p-5"
                     >
                       <div className="flex justify-center items-center h-48">
                         <img
                           src={`${book.coverImage}`}
                           alt={book.bookName}
-                          className="max-w-full max-h-full object-contain"
+                          className="w-[200px] max-h-full object-contain"
                         />
                       </div>
                       <div className="p-4 pb-0 flex flex-col justify-center items-center bg-white">
@@ -96,15 +96,16 @@ const DashBoard = () => {
                   {popularDhyaanList?.map((dhyaan, index) => (
                     <div
                       key={index}
-                      className="min-w-[250px] border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-lg transition-shadow duration-300 hover:transform hover:scale-105 bg-white p-5"
+                      className="min-w-[210px] border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-lg transition-shadow duration-300 hover:transform hover:scale-105 bg-white p-5"
                     >
-                      <div className="flex justify-center items-center h-48">
-                        <img
-                          src={BACKEND_URL + "/" + dhyaan.dhyanPoster}
-                          alt={dhyaan.dhyanName}
-                          className="max-w-full max-h-full object-contain"
-                        />
-                      </div>
+                     <div className="flex justify-center items-center h-48">
+  <img
+    src={dhyaan.dhyanPoster}
+    alt={dhyaan.dhyanName}
+ className="w-[200px] max-h-full object-contain"
+  />
+</div>
+
                       <div className="p-4 pb-0 flex flex-col justify-center items-center bg-white">
                         <Rating rating={dhyaan.rating} />
                         <h3 className="text-lg font-semibold text-gray-800 mb-2 mt-1">
