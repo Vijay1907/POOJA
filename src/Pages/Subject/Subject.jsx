@@ -76,7 +76,7 @@ const Books = () => {
       toast.success("Book deleted successfully");
     } catch (error) {
       console.log(error);
-      toast.error("Failed to delete book");
+      toast.error(error.response?.data?.message ||"Failed to delete book");
     } finally {
       setIsLoading(false);
     }
@@ -146,7 +146,7 @@ const Books = () => {
         setShoudlApiHit(!shoudlApiHit)
       } catch (error) {
         console.log(error);
-        toast.error("Failed to update book");
+        toast.error(error.response?.data?.message ||"Failed to update book");
       }
       finally {
         setIsLoading(false);

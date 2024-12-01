@@ -117,7 +117,7 @@ const ForgotPassword = () => {
         toast.error('Failed to resend OTP');
       }
     } catch (error) {
-      toast.error('Failed to resend OTP');
+      toast.error(error.response?.data?.message ||'Failed to resend OTP');
     } finally {
       setLoading(false); // Set loading to false after the API request
     }
