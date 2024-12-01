@@ -60,7 +60,7 @@ const DashBoard = () => {
                     >
                       <div className="flex justify-center items-center h-48">
                         <img
-                          src={`${BACKEND_URL}/${book.coverImage}`}
+                          src={`${book.coverImage}`}
                           alt={book.bookName}
                           className="max-w-full max-h-full object-contain"
                         />

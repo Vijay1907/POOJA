@@ -146,7 +146,7 @@ const Dhyaan = () => {
               dhyaanList.map((dhyaan, index) => (
                 <div key={index} className="bg-white border border-gray-200 rounded-lg shadow-md overflow-hidden">
                   <div className='flex items-center justify-center mx-2 px-3'>
-                    <img src={`${BACKEND_URL}/${dhyaan.dhyanPoster}`} alt={dhyaan.dhyanName} className="h-[180px] object-contain mt-3" />
+                    <img src={`${dhyaan.dhyanPoster}`} alt={dhyaan.dhyanName} className="h-[180px] object-contain mt-3" />
                   </div>
                   <div className="p-4 pb-2">
                     <h3 className="text-lg font-semibold mb-2">{dhyaan.dhyanName}</h3>

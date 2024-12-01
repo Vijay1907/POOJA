@@ -33,7 +33,7 @@ const EditDhyaan = () => {
         dhyanPoster: null,  // Don't pre-set the poster image here, handle it separately
         dhyanContent: dhyaan.dhyanContent || '',
       });
-      setPreviewImage(dhyaan.dhyanPoster ? `${BACKEND_URL}/${dhyaan.dhyanPoster}` : null);
+      setPreviewImage(dhyaan.dhyanPoster ? `${dhyaan.dhyanPoster}` : null);
     }
   }, [dhyaan]);
 

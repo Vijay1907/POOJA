@@ -89,7 +89,7 @@ const Books = () => {
   const handleEditClick = (book) => {
     setSelectedBook(book);
     setOriginalBook({ ...book });
-    setPreviewImage(`${BACKEND_URL}/${book.coverImage}`);
+    setPreviewImage(`${book.coverImage}`);
     setPreviewPdf("");
     setFormData({
       bookName: book.bookName,
@@ -219,7 +219,7 @@ const Books = () => {
               subjectsList.map((book, index) => (
                 <div key={index} className="bg-white border border-gray-200 rounded-lg shadow-md overflow-hidden">
                   <div className='flex items-center justify-center mx-2 px-3'>
-                    <img src={`${BACKEND_URL}/${book.coverImage}`} alt={book.bookName} className="h-[180px] object-contain mt-3" />
+                    <img src={`${book.coverImage}`} alt={book.bookName} className="h-[180px] object-contain mt-3" />
                   </div>
                   <div className="p-4 pb-2">
                     {/* <hr className="border-gray-300 mb-3" /> */}
